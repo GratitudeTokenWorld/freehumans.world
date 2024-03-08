@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" id="homepage">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1 user-scalable=0, minimal-ui">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <!-- Custom WebSafe Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&family=Roboto:wght@300;900&display=swap"
+        rel="stylesheet">
+    <meta name="robots" content="index, connect">
+
+    <!-- << SHARED HEAD CODE: End >> -->
+
+    <!-- << SPECIFIC HEAD CODE: Start >> -->
+    <meta name="description" content="Free Humans World">
+    <!-- Open Graph -->
+    <meta property="og:title" content="BiiP.world" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Free Humans World" />
+    <meta property="og:image" content="https://BiiP.world/img/biip.png" />
+    <meta property="og:url" content="https://BiiP.world" />
+    <meta property="og:site_name" content="BiiP.world" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:title" content="BiiP.world">
+    <meta name="twitter:description" content="Free Humans World">
+    <meta name="twitter:image" content="https://biip.world/img/biip-twitter.png">
+    <meta name="twitter:site" content="@Gratitude_World">
+    <meta name="twitter:creator" content="@Lucian_Apetrei">
+
+    <title>Free Humans World</title>
+
+    <!-- Style -->
+    <link class="themeCSS" rel="stylesheet" href="/css/default-theme.css">
+    <script type="module" src="/js/theme.js"></script>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="canonical" href="https://biip.world" />
+</head>
+
+<body>
+    <canvas id="confetti"></canvas>
+    <input id="themeSwitch" type="checkbox">
+    <div id="loader"></div>
+    <style id="root_variables"></style>
+    <div class="freeuser"><img src="/img/freeuser2.jpg" /></div>
+    <div class="overlay">
+        <img id="close_overlay" src="/svgs/close.svg" />
+        <div id="first_action">
+            <p class="prompt p10">Authenticate using your Secret, your FaceID or Create a new account.</p>
+            <button id="secret" class="btn">Secret</button>
+            <button id="faceID" class="btn">FaceID</button>
+            <button id="createUser" class="btn">Create</button>
+        </div>
+
+        <form id="authentication" class="forms hide">
+            <label for="user_authenticating"><b>Enter your blockchain username</b></label>
+            <input id="user_authenticating" type="text" placeholder="username" title="Your username" required />
+            <label for="secret_share"><b>Enter your secret share.</b></label>
+            <input id="secret_share" type="text" maxlength="80" placeholder="secret share" title="Your secret share"
+                required />
+            <input id="login" type="submit" value="Authenticate" />
+        </form>
+
+        <form id="register" class="forms hide">
+            <p class="prompt p10"><b>You are creating a globally unique Blockchain and AI powered identity.</b></p>
+            <div class="form-group">
+                <label for="email"><b>Email</b> (Can be changed)</label>
+                <input id="email" type="email" placeholder="Email" title="You can change this later." required />
+                <input id="code15" class="hide" type="number" maxlength="6" max="999999"
+                    placeholder="Verification Code" />
+                <button id="sendCode" class="btn hide" disabled>Send code</button>
+            </div>
+            <div class="form-group">
+                <label for="username"><b>username </b>(Permanent!)</label>
+                <input id="username" type="username" placeholder="username" pattern="^[a-z1-5]{4,12}$"
+                    title="This is unique and can never be changed." required />
+                <p class="criteria p23"><b>CONDITIONS:</b><br>
+                    <img class="min-char S_icon" src="/svgs/check.svg" /> Min. number of characters: 4<br>
+                    <img class="max-char S_icon" src="/svgs/check.svg" /> Max. number of characters: 12<br>
+                    <img class="lowercaseNumbers S_icon" src="/svgs/check.svg" /> Only lowercase letters: a-z and only
+                    digits: 1-5<br>
+                    <img class="availability S_icon" src="/svgs/check.svg" /> Must be available
+                </p>
+            </div>
+            <div class="form-group">
+                <label for="invitedByUser"><b>Invited by </b>(Who invited you?)</label>
+                <input id="invitedByUser" type="username" placeholder="username" pattern="^[a-z1-5]{4,12}$"
+                    title="This user will earn some toke amount for inviting you." required />
+            </div>
+            <div class="form-group">
+                <label for="terms"><b>Read the terms and conditions.</b></label>
+                <textarea id="terms" title="Please read before agreeing." onkeydown="return false"
+                    onpaste="return false" oncut="return false" oncopy="return true">
+Spotify Terms of Use
+Effective as of: March 24, 2023
+
+Introduction
+The Spotify Service
+Your Use of the Spotify Service
+Content and Intellectual Property Rights
+Customer Support, Information, Questions, and Complaints
+Problems and Disputes
+About These Terms
+1. Introduction
+Please read these Terms of Use ("Terms") carefully as they govern your use of (which includes access to) Spotify's
+personalized services for streaming music and other content, including all of our websites and software applications
+that incorporate or link to these Terms (collectively, the "Spotify Service") and any music, videos, podcasts,
+audiobooks, or other material that is made available through the Spotify Service ("Content").
+
+Use of the Spotify Service is subject to the Spotify Privacy Policy and additional terms and conditions presented by
+Spotify, all of which are made part of these Terms by this reference.
+
+By signing up for, or otherwise using, the Spotify Service, you agree to these Terms. If you do not agree to these
+Terms, then you must not use the Spotify Service or access any Content.
+
+THESE TERMS CONTAIN A MANDATORY ARBITRATION PROVISION THAT, AS FURTHER SET FORTH IN SECTION 6 BELOW, REQUIRES THE USE OF
+ARBITRATION ON AN INDIVIDUAL BASIS TO RESOLVE DISPUTES, RATHER THAN JURY TRIALS OR ANY OTHER COURT PROCEEDINGS, OR CLASS
+ACTIONS OF ANY KIND. IN ARBITRATION THERE IS LESS DISCOVERY AND APPELLATE REVIEW THAN IN COURT.
+
+Service provider
+These Terms are between you and Spotify USA Inc., 4 World Trade Center, 150 Greenwich Street, 62nd Floor, New York, NY,
+10007.
+
+Age and eligibility requirements
+BY USING THE SPOTIFY SERVICE, YOU AFFIRM THAT YOU ARE 18 YEARS OR OLDER TO ENTER INTO THESE TERMS, OR, IF YOU ARE NOT,
+THAT YOU ARE 13 YEARS OR OLDER AND HAVE OBTAINED PARENTAL OR GUARDIAN CONSENT TO ENTER INTO THESE TERMS. Additionally,
+in order to use the Spotify Service and access any Content, you represent that: you reside in the United States, and any
+registration and account information that you submit to Spotify is true, accurate, and complete, and you agree to keep
+it that way at all times.
+
+2. The Spotify Service
+Spotify Service options
+We provide numerous Spotify Service options. Certain Spotify Service options are provided free of charge, while other
+options require payment before they can be accessed ("Paid Subscriptions"). We may also offer special promotional plans,
+memberships, or services, including offerings of third-party products and services. We are not responsible for the
+products and services provided by such third parties.
+            </textarea>
+            </div>
+
+            <p id="messages" class="pv10"><b></b></p>
+            <input id="continueForm" class="block" type="submit" value="Continue" />
+            <button id="backForm" class="btn">&laquo; Back</button>
+        </form>
+
+        <div id="CreateFaceContainer" class="hide">
+            <h3 class="p10"></h3>
+            <p class="prompt p10">The final step is to create your faceID.</p>
+            <button id="createFace" class="btn" disabled>Create FaceID</button>
+        </div>
+    </div>
+    <main class="maxw-690">
+        <logo title="Free Humans World Animated Logo">
+            <svg viewBox="0 0 300 85.7">
+                <!-- Define the linear gradient for the shine effect -->
+                <defs>
+                    <linearGradient id="shineGradient" gradientTransform="rotate(20)">
+                        <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+                        <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
+                        <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                    </linearGradient>
+                    <!-- Create a mask using the gradient -->
+                    <mask id="shineMask">
+                        <rect x="0" y="0" width="100%" height="100%" fill="url(#shineGradient)" />
+                    </mask>
+                </defs>
+                <path id="logo_blue"
+                    d="M293.4,85l-0.6-0.5L250.9,48c-1.4-1.2-2.3-3.1-2.3-5.1c0-2.1,0.9-3.9,2.3-5.1l41.9-36.4l0.7-0.6
+            	c0.7-0.5,1.5-0.7,2.3-0.7c2.3,0,4.2,2,4.2,4.4l0,0v76.8l0,0c0,2.5-1.9,4.4-4.2,4.4C294.9,85.7,294.1,85.4,293.4,85z" />
+                <path id="logo_red"
+                    d="M194.1,85.7c-2.3,0-4.2-2-4.2-4.4l0,0V4.4l0,0c0-2.5,1.9-4.4,4.2-4.4c0.9,0,1.7,0.3,2.3,0.7l0.7,0.6
+            	L239,37.8c1.4,1.2,2.3,3.1,2.3,5.1c0,2.1-0.9,3.9-2.3,5.1L197,84.5l-0.6,0.5C195.8,85.4,195,85.7,194.1,85.7z" />
+                <polygon id="logo_f"
+                    points="51.6,50.7 17.7,50.7 17.7,85.7 0,85.7 0,0 55.8,0 55.8,14.3 17.7,14.3 17.7,36.5 51.6,36.5 " />
+                <polygon id="logo_h" points="151.7,85.7 134.1,85.7 134.1,49 99.6,49 99.6,85.7 81.9,85.7 81.9,0 99.6,0 99.6,34.7 
+            	134.1,34.7 134.1,0 151.7,0 " />
+                <g mask="url(#shineMask)">
+                    <!-- The element you want to apply the shine effect to -->
+                    <polygon id="logo_w"
+                        points="281.3,0 281.3,59.3 248.4,26.4 248.3,26.3 248.3,26.3 247.4,25.4 234.2,38.6 234.2,38.6 208.5,61 208.5,0 189.8,0 189.8,85.7 208.5,85.7 208.5,85.7 247.4,51.9 281.3,85.7 281.3,85.7 281.3,85.7 300,85.7 300,0" />
+                </g>
+            </svg>
+        </logo>
+
+        <h1>FREE HUMANS WORLD</h1>
+        <h2 class="mt23">Gamified Web 3 network with human-driven value distribution.</h2>
+
+        <!-- <img class="world_map" src="/img/internet-access-map.png" /> -->
+        <!-- REPLACE THIS BUTTON WITH DISCONNECT BUTTON AND SHOW THE PARTICLE SPHERE -->
+        <div class="canvas">
+            <canvas id="particlesCanvas" style="display: none;"></canvas>
+            <button id="registerBTN" class="registerBTN btn main-color" title="Own Your Digital Self"><b>BREAK
+                    FREE</b></button>
+        </div>
+        <!-- Asta tre sa fie un search cu sugestii, foloseste acelasi stil ca la search-ul principal. -->
+        <!-- Filter by city or country ... Soon: 17D World Challenge UX -->
+        <!-- The switch is displayed only on Own profile -->
+        <p id="location" class="living" title="Choose a location"><img class="M_icon invert2" src="/svgs/globe.svg" />
+            Worldwide<span style="color: #696969"></span>
+        </p>
+        <div class="stats grid2 gap10">
+            <div title="Users registered">Users<b>1,000,000</b></div>
+            <div title="Users active right now">Active now<b>230,000</b></div>
+            <div title="User created NFTs">NFTs<b>23,000,000</b></div>
+            <div title="Posts published">Posts<b>1,000,500</b></div>
+        </div>
+        <div class="byType">
+            <b title="Videos"><img class="L_icon invert2" src="/svgs/video.svg" />10,000,000</b>
+            <b title="Images"><img class="L_icon invert2" src="/svgs/image.svg" />10,000,000</b>
+            <b title="Audio"><img class="L_icon invert2" src="/svgs/music.svg" />1,000,000</b>
+            <b title="Text"><img class="L_icon invert2" src="/svgs/text.svg" />1,000,000</b>
+            <b title="Selling"><img class="L_icon invert2" src="/svgs/cart.svg" />1,000,000</b>
+        </div>
+        <h2 class="content_type pv23">JOIN ME</h2>
+        <div class="video_presentation">
+            <video controls poster="/img/geek.jpg">
+                <source src="/videos/fhw.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <br><br><br>
+        <h2 class="content_type pv23">INVITE LEADERBOARD</h2>
+        <form class="binaryCheckbox">
+            <input id="invite_filter" class="hide" type="checkbox" />
+            <label for="invite_filter">
+                <span>You</span>
+                <span>Incremental</span>
+            </label>
+        </form>
+        <table id="invites" class="table1">
+            <tr>
+                <th></th>
+                <th>User</th>
+                <th>Invited</th>
+                <th>Earned</th>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><a href="/profile.html">@lucianape3</a></td>
+                <td>50</td>
+                <td>500 GRAT</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><a href="/profile.html">@fatzuca</a></td>
+                <td>40</td>
+                <td>400 GRAT</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><a href="/profile.html">@michael</a></td>
+                <td>30</td>
+                <td>300 GRAT</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td><a href="/profile.html">@maria</a></td>
+                <td>20</td>
+                <td>200 GRAT</td>
+            </tr>
+            <tr class="you">
+                <td>11</td>
+                <td><a href="/profile.html">@lucianape3</a></td>
+                <td>50</td>
+                <td>500 GRAT</td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td><a href="/profile.html">@fatzuca</a></td>
+                <td>40</td>
+                <td>400 GRAT</td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td><a href="/profile.html">@michael</a></td>
+                <td>30</td>
+                <td>300 GRAT</td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td><a href="/profile.html">@maria</a></td>
+                <td>20</td>
+                <td>200 GRAT</td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td><a href="/profile.html">@maria</a></td>
+                <td>20</td>
+                <td>200 GRAT</td>
+            </tr>
+        </table>
+
+        <h2 class="content_type pv23">CONNECTIONS LEADERBOARD</h2>
+        <form class="binaryCheckbox">
+            <input id="connectShip_filter" class="hide" type="checkbox" checked />
+            <label for="connectShip_filter">
+                <span>You</span>
+                <span>Incremental</span>
+            </label>
+        </form>
+        <table id="connectShip" class="table1">
+            <tr>
+                <th></th>
+                <th>User</th>
+                <th>Connections</th>
+                <th>Virality</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><a href="/profile.html">@lucianape3</a></td>
+                <td>50</td>
+                <td>23%</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><a href="/profile.html">@fatzuca</a></td>
+                <td>40</td>
+                <td>33%</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><a href="/profile.html">@michael</a></td>
+                <td>30</td>
+                <td>13%</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><a href="/profile.html">@maria</a></td>
+                <td>20</td>
+                <td>83%</td>
+            </tr>
+        </table>
+    </main>
+    <div id="search_container">
+        <form>
+            <input id="searchThis" type="text" value="" placeholder="Search ..." />
+            <input type="submit" value="" />
+        </form>
+        <div class="results">
+            <span>Games</span> <span>Funny</span> <span>DIY</span> <span>Health</span>
+        </div>
+    </div>
+    <footer class="maxw-690">
+
+    </footer>
+    <button id="scrollToTopBtn"></button>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.js"></script> -->
+    <script type="module" src="/js/index.js"></script>
+</body>
+
+</html>

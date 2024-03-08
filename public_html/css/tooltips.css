@@ -1,0 +1,87 @@
+tooltip {
+    position: fixed;
+    z-index: 23;
+    background-color: rgba(var(--white-rgb), .95);
+    border: 1px solid var(--second-contrast-32);
+    padding: 10px;
+    text-align: left;
+    width: 77vw;
+    max-width: 420px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    color: var(--second-contrast);
+    font-size: 12px;
+    pointer-events: none;
+    border-radius: 5px;
+    box-shadow: 0 0 15px var(--second-contrast-32);
+    transform: scale(0);
+    opacity: 0;
+    transition: 0.23s all
+}
+
+tooltip b {
+    display: inline-block;
+}
+
+tooltip p {
+    padding: 0;
+    margin: 0
+}
+
+tooltip * {
+    pointer-events: none;
+    display: block;
+    line-height: 1.4;
+}
+
+title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.equip,
+.use {
+    color: var(--tooltip-green)
+}
+
+
+tooltip item_level {
+    color: var(--tooltip-yellow)
+}
+
+actions button {
+    line-height: 1;
+    margin-top: 5px;
+    pointer-events: all;
+    border-radius: 5px !important;
+    font-weight: bold !important;
+    letter-spacing: 1px;
+    color: white
+}
+
+actions button:after {
+    content: ' ⇾ '
+}
+
+.buy {
+    padding-right: 40px;
+    background: var(--tooltip-green) url(/svgs/backpack.svg) no-repeat calc(100% - 16px) 40% !important;
+    background-size: 20px 20px !important;
+    margin-right: 5px;
+    cursor: grab;
+    color: var(--main-contrast)
+}
+
+
+.sell {
+    padding-right: 40px;
+    background: var(--main-color) url(/svgs/tokens.svg) no-repeat calc(100% - 16px) 50% !important;
+    background-size: 23px 23px !important;
+}
+
+@media screen and (min-width: 950px) {
+    tooltip {
+        width: 420px;
+    }
+}

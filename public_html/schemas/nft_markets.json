@@ -1,0 +1,53 @@
+{
+    "Pages": {
+        "descr": "Create, Sell or Buy unique Pages as NFT's.",
+        "subcat": [
+            "Personal Brand",
+            "Company",
+            "Organization",
+            "Government",
+            "Other"
+        ]
+    },
+    "Avatars": {
+        "descr": "Create, Sell or Buy unique Avatars as NFT's.",
+        "subcat": [
+            "Cyberpunk Avatars",
+            "Minimalist Avatars",
+            "Animated Avatars"
+        ]
+    },
+    "Covers": {
+        "descr": "Create, Sell or Buy unique Covers as NFT's.",
+        "subcat": [
+            "Cyberpunk Covers",
+            "Minimalist Covers",
+            "Animated Covers"
+        ]
+    },
+    "Animations": {
+        "descr": "Create, Sell or Buy unique Animations as NFT's.",
+        "subcat": [
+            "GIF",
+            "Video",
+            "Other"
+        ]
+    },
+    "Sounds": {
+        "descr": "Create, Sell or Buy unique Sounds as NFT's.",
+        "subcat": [
+            "Avatar Sounds",
+            "Buttons Sounds",
+            "Other sounds"
+        ]
+    },
+    "Scripts": {
+        "descr": "Create, Sell or Buy unique Scripts as NFT's.",
+        "subcat": [
+            "Mixed",
+            "CSS & HTML",
+            "JS / Useful",
+            "JS / Games"
+        ]
+    }
+}

@@ -1,0 +1,118 @@
+#subheader {
+    position: fixed;
+    top: 53px;
+    width: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#subheader nav {
+    width: 100%;
+    max-width: 690px;
+    margin: 0 auto;
+}
+
+#filters {
+    width: 12vw;
+    overflow: hidden;
+    margin: 10px 10px 10px 0;
+    display: grid;
+    gap: 2px;
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: repeat(7, 1fr);
+    transition: 0.23s width
+}
+
+#filters.expand {
+    width: 100%;
+    overflow: visible;
+}
+
+#filters input {
+    display: none
+}
+
+#filters label {
+    width: 12vw;
+    height: 12vw;
+    position: relative;
+    margin: 0 auto;
+    border-radius: 64px;
+    cursor: pointer;
+    background: var(--button-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+    transition: 0.23s all
+}
+
+#filters.expand label {
+    pointer-events: all;
+}
+
+#filters:not(.expand) .mixed {
+    background-color: var(--main-color)
+}
+
+#filters:not(.expand) .mixed img {
+    filter: none
+}
+
+#filters label:first-of-type {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#filters.expand label:first-of-type {
+    border-top-left-radius: 64px;
+    border-bottom-left-radius: 64px;
+}
+
+#filters label:hover,
+#filters input:checked+label {
+    background: var(--red-balance) !important;
+}
+
+#filters label img {
+    display: inline-block;
+    min-width: 50%;
+    max-height: 50%;
+    filter: var(--invert2);
+    transition: 0.23s filter
+}
+
+#filters input:checked+label img,
+#filters label:hover img {
+    filter: none !important
+}
+
+@media screen and (min-width: 690px) {
+    #filters {
+        width: 100% !important;
+    }
+
+    #filters,
+    #filters label {
+        width: 64px;
+        height: 64px;
+    }
+
+    #filters label {
+        border-radius: 64px !important;
+        pointer-events: all !important;
+    }
+
+    #filters:not(.expand) .mixed {
+        background-color: var(--button-bg)
+    }
+
+    #filters:not(.expand) .mixed img {
+        filter: var(--invert2)
+    }
+
+    #filters label img {
+        min-width: 32%;
+        max-height: 32%;
+    }
+}

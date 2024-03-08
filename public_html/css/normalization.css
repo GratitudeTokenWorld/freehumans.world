@@ -1,0 +1,117 @@
+* {
+    font-family: Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+h1,
+h2,
+h3 {
+    display: block;
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    text-align: center;
+    -webkit-user-drag: none;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body {
+    font-size: 12px;
+    color: var(--second-contrast);
+}
+
+body p {
+    line-height: 1.4;
+}
+
+img {
+    display: block;
+}
+
+
+#navigation,
+#loader,
+#menu-options,
+.post-options,
+.dots,
+#themeSwitch,
+#soundSwitch,
+#posting input[type=checkbox],
+.type input,
+#notifications-list,
+#notifications_category input,
+#messages-container .me .small_avatar,
+.posts article,
+.post-actions::-webkit-scrollbar,
+#shared_board::-webkit-scrollbar,
+.squareSelection div,
+#dm .discussion::-webkit-scrollbar,
+#previous_posts::-webkit-scrollbar,
+.squareSelection::-webkit-scrollbar,
+#subcategories::-webkit-scrollbar,
+#grid_filter input,
+actions button,
+#inventory slots,
+.overlay,
+.criteria {
+    display: none
+}
+
+.hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.post-actions,
+#shared_board,
+#dm .discussion,
+.squareSelection,
+#subcategories {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+
+.disable-all * {
+    pointer-events: none !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+#main {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    max-width: 1111px;
+    margin: 0 auto;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+    color: var(--second-contrast-99)
+}

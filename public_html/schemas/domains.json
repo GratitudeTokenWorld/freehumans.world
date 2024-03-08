@@ -1,0 +1,168 @@
+{
+    "Education": {
+        "Formal Education": {
+            "Primary Education": {},
+            "Secondary Education": {},
+            "Tertiary Education": {
+                "Undergraduate Studies": {},
+                "Postgraduate Studies": {}
+            }
+        },
+        "Informal Education": {
+            "Online Courses": {},
+            "Workshops": {},
+            "Self-Learning": {}
+        }
+    },
+    "Health": {
+        "Physical Health": {
+            "Fitness": {},
+            "Nutrition": {},
+            "Medicine": {
+                "General Practice": {},
+                "Specializations": {}
+            }
+        },
+        "Mental Health": {
+            "Therapy": {},
+            "Mindfulness": {},
+            "Psychiatry": {}
+        }
+    },
+    "Science": {
+        "Natural Sciences": {
+            "Biology": {},
+            "Physics": {},
+            "Chemistry": {}
+        },
+        "Social Sciences": {
+            "Psychology": {},
+            "Sociology": {},
+            "Anthropology": {}
+        },
+        "Formal Sciences": {
+            "Mathematics": {},
+            "Logic": {},
+            "Statistics": {}
+        }
+    },
+    "Art": {
+        "Visual Arts": {
+            "Painting": {},
+            "Sculpture": {},
+            "Photography": {}
+        },
+        "Performing Arts": {
+            "Music": {},
+            "Theatre": {},
+            "Dance": {}
+        },
+        "Literary Arts": {
+            "Poetry": {},
+            "Fiction": {},
+            "Non-Fiction": {}
+        }
+    },
+    "Technology": {
+        "Information Technology": {
+            "Software Development": {},
+            "Cybersecurity": {},
+            "Data Science": {}
+        },
+        "Engineering": {
+            "Mechanical Engineering": {},
+            "Electrical Engineering": {},
+            "Civil Engineering": {}
+        },
+        "Emerging Technologies": {
+            "Artificial Intelligence": {},
+            "Blockchain": {},
+            "Virtual Reality": {}
+        }
+    },
+    "Business": {
+        "Entrepreneurship": {
+            "Startups": {},
+            "Small Business Management": {},
+            "Innovation": {}
+        },
+        "Finance": {
+            "Banking": {},
+            "Investment": {},
+            "Insurance": {}
+        },
+        "Marketing": {
+            "Digital Marketing": {},
+            "Market Research": {},
+            "Advertising": {}
+        }
+    },
+    "Recreation": {
+        "Sports": {
+            "Team Sports": {},
+            "Individual Sports": {},
+            "Extreme Sports": {}
+        },
+        "Hobbies": {
+            "Gardening": {},
+            "Cooking": {},
+            "Crafts": {}
+        },
+        "Entertainment": {
+            "Movies": {},
+            "Gaming": {},
+            "Reading": {}
+        }
+    },
+    "Social": {
+        "Community Service": {
+            "Volunteering": {},
+            "Fundraising": {},
+            "Awareness Campaigns": {}
+        },
+        "Networking": {
+            "Social Media": {},
+            "Professional Networking": {},
+            "Local Communities": {}
+        },
+        "Cultural Activities": {
+            "Festivals": {},
+            "Museums": {},
+            "Cultural Exchanges": {}
+        }
+    },
+    "Environment": {
+        "Conservation": {
+            "Wildlife Protection": {},
+            "Habitat Preservation": {},
+            "Sustainable Practices": {}
+        },
+        "Research": {
+            "Climate Change Studies": {},
+            "Ecology": {},
+            "Renewable Energy": {}
+        },
+        "Activism": {
+            "Environmental Advocacy": {},
+            "Policy Lobbying": {},
+            "Community Mobilization": {}
+        }
+    },
+    "Politics": {
+        "Governance": {
+            "Public Administration": {},
+            "Law Making": {},
+            "International Relations": {}
+        },
+        "Activism": {
+            "Political Campaigns": {},
+            "Human Rights Advocacy": {},
+            "Grassroots Movements": {}
+        },
+        "Diplomacy": {
+            "Peacekeeping": {},
+            "Treaty Negotiation": {},
+            "International Aid": {}
+        }
+    }
+}

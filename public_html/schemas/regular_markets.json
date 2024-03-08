@@ -1,0 +1,157 @@
+{
+    "Free Stuff": {
+        "descr": "No price tag, just pick it up or pay for transport.",
+        "subcat": [
+            "Barter and Swap",
+            "Free Items",
+            "Other free stuff"
+        ]
+    },
+    "For Sale": {
+        "descr": "Common stuff For Sale priced in GRAT tokens.",
+        "subcat": [
+            "Appliances",
+            "Baby Gear",
+            "Clothing and Accessories",
+            "Collectibles",
+            "Electronics",
+            "Furniture",
+            "Home and Garden",
+            "Kids' Clothing",
+            "Memorabilia",
+            "Musical Instruments",
+            "Sports and Outdoors",
+            "Tools and Machinery"
+        ]
+    },
+    "Vehicles": {
+        "descr": "Buy / Sell vehicles priced in GRAT tokens.",
+        "subcat": [
+            "Boats",
+            "Cars",
+            "Commercial Vehicles",
+            "Motorcycles",
+            "Parts and Accessories",
+            "RVs and Campers",
+            "Trucks"
+        ]
+    },
+    "Real Estate": {
+        "descr": "Buy / Sell real-estate priced GRAT tokens.",
+        "subcat": [
+            "Commercial Property",
+            "For Rent",
+            "For Sale",
+            "Real Estate Services",
+            "Vacation Rentals"
+        ]
+    },
+    "Jobs": {
+        "descr": "Find or Post jobs of all kind.",
+        "subcat": [
+            "Freelance",
+            "Full-time",
+            "Internships",
+            "Job Services",
+            "Part-time"
+        ]
+    },
+    "Services": {
+        "descr": "Offer / Buy any type of service.",
+        "subcat": [
+            "Automotive Services",
+            "Beauty and Spa",
+            "Cafes",
+            "Computer and Tech Help",
+            "Creative Services",
+            "Event Services",
+            "Financial Services",
+            "Handyman Services",
+            "Health and Wellness",
+            "Home Services",
+            "Legal Services",
+            "Moving and Storage",
+            "Pet Services",
+            "Restaurants"
+        ]
+    },
+    "Community": {
+        "descr": "Something valuable for your Community.",
+        "subcat": [
+            "Classes and Workshops",
+            "Events",
+            "Groups and Clubs",
+            "Lost and Found",
+            "Volunteers"
+        ]
+    },
+    "Business and Industrial": {
+        "descr": "Buy / Sell business/industrial things & services.",
+        "subcat": [
+            "Agriculture and Forestry",
+            "Construction",
+            "Industrial Equipment",
+            "Restaurant and Food Service",
+            "Retail and Wholesale"
+        ]
+    },
+    "Hobbies and Leisure": {
+        "descr": "Buy / Sell different collectibles or hobby and leisure gear.",
+        "subcat": [
+            "Books and Magazines",
+            "Music and Movies",
+            "Sports Equipment",
+            "Toys and Games",
+            "Tickets",
+            "Experiences"
+        ]
+    },
+    "Travel": {
+        "descr": "Find a good deal or offer one to travellers.",
+        "subcat": [
+            "Hotels",
+            "Travel Services",
+            "Vacation Packages"
+        ]
+    },
+    "Health and Fitness": {
+        "descr": "We need at least 3-4 forms of therapy nowadays.",
+        "subcat": [
+            "Fitness Equipment",
+            "Health Services",
+            "Nutrition and Supplements"
+        ]
+    },
+    "Pets and Animals": {
+        "descr": "Do not SELL animals! They are not objects.",
+        "subcat": [
+            "Pets for Adoption",
+            "Pet Supplies",
+            "Animal Services"
+        ]
+    },
+    "Technology": {
+        "descr": "Buy / Sell gadgets, devices, computer engineering stuff.",
+        "subcat": [
+            "Gadgets",
+            "Computers",
+            "Software"
+        ]
+    },
+    "Personal Care": {
+        "descr": "Buy or Sell beauty and care products here.",
+        "subcat": [
+            "Beauty Products",
+            "Personal Hygiene",
+            "Wellness Products"
+        ]
+    },
+    "Arts and Crafts": {
+        "descr": "Trade with artists, engineers and craftmen.",
+        "subcat": [
+            "Handmade Goods",
+            "Art Supplies",
+            "DIY Projects"
+        ]
+    }
+}

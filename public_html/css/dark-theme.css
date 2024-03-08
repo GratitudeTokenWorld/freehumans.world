@@ -1,0 +1,92 @@
+:root {
+    --logo: url(/svgs/FHW.svg) no-repeat 50% 50%;
+    --logo-letters: #FFFFFF;
+    --black-rgb: 255, 255, 255;
+    --white-rgb: 0, 0, 0;
+    --green-balance: lime;
+    --blue-balance: #3e8fdb;
+    --red-balance: #f86969;
+    --h1: #232323;
+    --main-bg-color: #000000;
+    --main-contrast: #000000;
+    --main-contrast-69: #00000069;
+    --main-contrast-99: #00000099;
+    --main-header-bg: rgba(0, 0, 0, .88);
+    --second-contrast: #ffffff;
+    --second-contrast-09: #ffffff09;
+    --second-contrast-15: #ffffff15;
+    --second-contrast-23: #ffffff23;
+    --second-contrast-32: #ffffff32;
+    --second-contrast-50: #ffffff50;
+    --second-contrast-69: #ffffff69;
+    --second-contrast-99: #ffffff99;
+    --button-bg: #151515;
+    --free-user: lighten;
+    --text: #fffcd9;
+
+    --dots: #ffffff15 url(/svgs/dots-white.svg) no-repeat 50% 50%;
+
+    --menu-options-bg: #232323;
+    --menu-options-border: #ffffff;
+    --menu-button: #ececec;
+    --menu-button-hover: #ff9c9c;
+    --menu-triangle: #910000;
+    --bright-gray: #ececec;
+    --features-b: #ffffff;
+    --article-bg: #232323;
+    --article-shadow: #ffffff12;
+    --search-bg: #111111;
+    --input-bg: #eeeeee;
+    --input-border: #ffffff;
+    --select-type-bg: #323232;
+    --select-type-border: #323232;
+    --gray: #808080;
+    --footer: #ffffff99;
+    --footer-link: #ffffff99;
+    --footer-link-secondary: #db463e;
+    --gray-69: #696969;
+    --main-color: #db463e;
+    --image-user: #ffffff;
+    --image-user-shadow: #000000;
+    --invert1: invert(1);
+    --invert2: invert(0);
+    --contrast-filter: contrast(0);
+    --brightness: brightness(0.32);
+
+    --comments-textarea-bg: #232323;
+    --comments-textarea-color: #ffffff;
+
+    --notification-bg: #00ff0008;
+    --notification-border: 1px solid rgba(0, 128, 0, 0.205);
+
+    --code-bg: #232323;
+    --code-border: 1px dashed #ffffff50;
+    --code-color: #3e92ff;
+
+    --main-color-dark: #ff3e3e;
+    --bright-blue: #9cccff;
+    --ink-blue: #3b5998;
+    --sub-header-bg: #2e3032;
+    --sub-header-border: #2e3032;
+    --slider-border: #db463e;
+    --switch-bg: url(/svgs/lightdark.svg) no-repeat 50% 50%;
+    --red: #ff4646;
+    --red-50: #ff464650;
+
+    --tooltip-green: #1eff00;
+    --tooltip-yellow: #ffd100;
+
+    --poor: #9D9D9D;
+    --common: #FFFFFF;
+    --uncommon: #1EFF00;
+    --rare: #0070DD;
+    --epic: #A335EE;
+    --legendary: #FF8000;
+    --artifact: #E6CC80;
+    --heirloom: #db463e;
+}
+
+html,
+body {
+    background-color: var(--main-bg-color);
+}

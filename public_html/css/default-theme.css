@@ -1,0 +1,94 @@
+:root {
+    --logo: url(/svgs/FHW.svg) no-repeat 50% 50%;
+    --logo-letters: #232323;
+    --black-rgb: 0, 0, 0;
+    --white-rgb: 255, 255, 255;
+    --green-balance: #011101;
+    --blue-balance: #2174c2;
+    --red-balance: #bd251d;
+    --h1: #232323;
+    --main-bg-color: #ffffff;
+    --main-contrast: #ffffff;
+    --main-contrast-69: #ffffff69;
+    --main-contrast-99: #ffffff99;
+    --main-header-bg: rgba(255, 255, 255, .88);
+    --second-contrast: #000000;
+    --second-contrast-09: #00000009;
+    --second-contrast-15: #00000015;
+    --second-contrast-23: #00000023;
+    --second-contrast-32: #00000032;
+    --second-contrast-50: #00000050;
+    --second-contrast-69: #00000069;
+    --second-contrast-99: #00000099;
+    --button-bg: #eaeaea;
+    --free-user: darken;
+    --text: #fffcd9;
+
+    --dots: #00000015 url(/svgs/dots.svg) no-repeat 50% 50%;
+
+    --menu-options-bg: #ffffff;
+    --menu-options-border: #ffffff;
+    --menu-button: #ffffff;
+    --menu-button-hover: #ff9c9c;
+    --menu-triangle: #ff9c9c;
+    --bright-gray: #ececec;
+    --features-b: #000000;
+    --article-bg: #ececec;
+    --article-shadow: #00000009;
+    --search-bg: #ffffff;
+    --input-bg: #eeeeee;
+    --input-border: #000000;
+    --select-type-bg: #ececec;
+    --select-type-border: #ececec;
+    --gray: #808080;
+    --footer: #232323;
+    --footer-link: #232323;
+    --footer-link-secondary: #db463e;
+    --gray-69: #696969;
+    --main-color: #db463e;
+    --image-user: #ffffff;
+    --image-user-shadow: #000000;
+
+    --invert1: invert(0);
+    --invert2: invert(1);
+    --contrast-filter: contrast(1);
+    --brightness: brightness(1);
+
+    --comments-textarea-bg: #ffffff;
+    --comments-textarea-color: #000000;
+
+    --notification-bg: #00ff0008;
+    --notification-border: 1px solid rgba(0, 128, 0, 0.205);
+
+    --code-bg: #daecff;
+    --code-border: 1px dashed #9fccff;
+    --code-color: #012453;
+
+    --main-color-dark: #530101;
+
+    --bright-blue: #9cccff;
+    --ink-blue: #3b5998;
+    --sub-header-bg: #e0eeff;
+    --sub-header-border: #cfe6ff;
+    --slider-border: #db463e;
+    --switch-bg: url(/svgs/lightdark.svg) no-repeat 50% 50%;
+    --red: #ff4646;
+    --red-50: #ff464650;
+
+    --tooltip-green: green;
+    --tooltip-yellow: #d1ab00;
+
+    --poor: #9D9D9D;
+    --common: #FFFFFF;
+    --uncommon: green;
+    --rare: #0070DD;
+    --epic: #A335EE;
+    --legendary: #FF8000;
+    --artifact: #E6CC80;
+    --heirloom: #db463e;
+}
+
+html,
+body {
+    background-color: var(--main-bg-color);
+}

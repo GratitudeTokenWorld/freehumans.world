@@ -1,0 +1,41 @@
+footer {
+    width: 100%;
+    position: fixed;
+    z-index: 2;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    pointer-events: none;
+}
+
+footer.maxw-690 {
+    overflow: visible;
+}
+
+footer button {
+    display: flex;
+    pointer-events: all;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border: 0;
+    border-radius: 40px;
+    background: 0;
+    background: #db463e;
+    box-shadow: 0 0 23px rgba(0, 0, 0, .5);
+}
+
+#post-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 64px;
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: -23px;
+    background: white;
+}

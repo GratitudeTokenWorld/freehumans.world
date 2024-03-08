@@ -1,0 +1,337 @@
+#main_header {
+    position: fixed;
+    height: 53px;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 690px;
+    margin: 0 auto;
+    padding-bottom: 23px;
+    padding: 5px;
+    background: var(--main-header-bg);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 23;
+    pointer-events: none;
+}
+
+.balances {
+    height: 43px;
+    display: flex;
+    justify-content: center;
+}
+
+.balances img {
+    margin: 6px 10px 0 0;
+}
+
+.balances span {
+    padding: 5px 0;
+    color: var(--red-balance);
+    display: inline-block;
+    height: 43px;
+    line-height: 34px;
+    font-family: 'Dosis', Arial, sans-serif;
+    font-size: 16px;
+    cursor: pointer
+}
+
+.balances .share2earn-balance {
+    color: var(--blue-balance);
+}
+
+.balances .like2give-balance {
+    margin-right: 5px
+}
+
+#main_header * {
+    pointer-events: all;
+}
+
+.main-header {
+    z-index: 10;
+}
+
+
+/* Inventory system */
+#inventory {
+    height: 44px;
+    white-space: nowrap;
+}
+
+#inventory bags {
+    display: inline-block;
+    width: 44px;
+    height: 44px;
+    padding: 0 5px;
+    margin-right: 5px;
+    background: url(/svgs/backpack.svg) no-repeat 50% 44%;
+    background-size: 28px 28px;
+    cursor: grab;
+    transition: 0.23s transform
+}
+
+
+#inventory bags:hover {
+    transform: scale(1.23)
+}
+
+bag_menu {
+    display: block;
+    position: absolute;
+    top: 9px;
+    right: 10px
+}
+
+bag_menu * {
+    border-radius: 5px;
+    border: 1px solid var(--second-contrast-32);
+    box-shadow: inset 0 0 10px var(--second-contrast-23);
+    display: inline-block;
+    background-size: 28px 28px;
+}
+
+wallet {
+    background: url(/svgs/brown-wallet.svg) no-repeat 55% 50%;
+    background-size: 23px 23px;
+}
+
+
+keychain {
+    background: var(--main-contrast-69) url(/svgs/keychain.svg) no-repeat 50% 50%;
+    background-size: 28px 28px;
+}
+
+bag_menu .rookie_bag {
+    background: var(--second-contrast-69) url(/svgs/rookie-bag.svg) no-repeat 50% 50%;
+    background-size: 28px 28px;
+}
+
+bag_menu .empty {
+    background: var(--main-contrast-69)
+}
+
+bag_menu .used {
+    background-color: var(--main-contrast-69)
+}
+
+bag_menu .locked {
+    background: var(--second-contrast-69) url(/svgs/locked.svg) no-repeat 50% 50%;
+    background-size: 23px 23px;
+}
+
+keychain:hover,
+.rookie_bag:hover,
+wallet:hover {
+    background-color: var(--second-contrast-23)
+}
+
+
+
+slots {
+    position: fixed;
+    top: 58px;
+    right: 10px;
+    display: inline-block;
+    z-index: 23;
+    cursor: pointer;
+    background: rgba(var(--white-rgb), .95);
+    border: 1px solid var(--second-contrast-32);
+    border-radius: 5px;
+    padding: 50px 10px 10px 10px
+}
+
+#inventory .open {
+    display: inline-block !important
+}
+
+slots nft {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    margin: 1px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0.5;
+    box-shadow: inset 0 0 10px var(--main-contrast-69);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+slots .unequipped,
+slots .equipped {
+    opacity: 0.69;
+    cursor: grab;
+}
+
+
+slots nft:hover,
+slots .equipped {
+    opacity: 1
+}
+
+slots nft:before,
+slots nft:after {
+    content: '';
+    width: 64px;
+    height: 64px;
+    background: var(--second-contrast-23);
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+slots nft.equipped:after {
+    --angle: 0deg;
+    z-index: 2;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    border-image: conic-gradient(from var(--angle), red, yellow, lime, aqua, blue, magenta, red) 1;
+    background-clip: padding-box;
+    animation: 2s rainbow-border linear infinite;
+}
+
+
+slots nft:hover:after {
+    border: 1px solid var(--second-contrast);
+    box-sizing: border-box;
+}
+
+slots nft img {
+    width: 62px;
+    height: 62px;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    z-index: 1;
+}
+
+/* QUALITY BASED HOVER COLOR */
+
+.poor_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--poor) !important;
+}
+
+.common_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--common) !important;
+}
+
+.uncommon_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--uncommon) !important;
+}
+
+.rare_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--rare) !important;
+}
+
+.epic_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--epic) !important;
+}
+
+.legendary_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--legendary) !important;
+}
+
+.artifact_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--artifact) !important;
+}
+
+.heirloom_inner_glow:hover:after {
+    box-shadow: inset 0 0 10px 5px var(--heirloom) !important;
+}
+
+
+
+#user-menu {
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+}
+
+.avatar-container,
+.post-thumbnail {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    border-radius: 51%;
+    overflow: hidden;
+    position: relative;
+    z-index: 3;
+    cursor: pointer
+}
+
+.avatar,
+.p-thumb {
+    width: 44px;
+    display: block;
+    border: 0;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+#menu-options {
+    min-width: 160px;
+    position: absolute;
+    top: 56px;
+    right: 3px;
+    padding: 5px;
+    border-radius: 5px;
+    background: var(--menu-button);
+    border: 0;
+    box-shadow: 0 3px 15px var(--second-contrast-69);
+    text-align: left;
+    z-index: 2;
+}
+
+#menu-options:before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--menu-button);
+    top: -10px;
+    right: 9px;
+    position: absolute;
+}
+
+.show #menu-options {
+    display: block;
+}
+
+.authenticated #menu-options {
+    top: 9px
+}
+
+#menu-options button {
+    border-radius: 5px;
+    width: 100%;
+    border: 0;
+    padding: 18px 10px;
+    background: var(--menu-button);
+    text-align: left;
+    cursor: pointer;
+    color: #000000;
+    font-size: 14px
+}
+
+#menu-options img {
+    margin-right: 5px;
+}
+
+#menu-options button:hover {
+    background: #23232323;
+    border-radius: 5px
+}
+
+#login span {
+    vertical-align: middle;
+}

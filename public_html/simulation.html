@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" id="timeline">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1 user-scalable=0, minimal-ui">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <!-- Custom WebSafe Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&family=Roboto:wght@300;900&display=swap"
+        rel="stylesheet">
+    <meta name="robots" content="index, connect">
+
+    <!-- << SHARED HEAD CODE: End >> -->
+
+    <!-- << SPECIFIC HEAD CODE: Start >> -->
+    <meta name="description" content="Beyond Social Media">
+    <!-- Open Graph -->
+    <meta property="og:title" content="BiiP.world" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Beyond Social Media" />
+    <meta property="og:image" content="https://BiiP.world/img/biip.png" />
+    <meta property="og:url" content="https://BiiP.world" />
+    <meta property="og:site_name" content="BiiP.world" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:title" content="BiiP.world">
+    <meta name="twitter:description" content="Beyond Social Media">
+    <meta name="twitter:image" content="https://biip.world/img/biip-twitter.png">
+    <meta name="twitter:site" content="@Gratitude_World">
+    <meta name="twitter:creator" content="@Lucian_Apetrei">
+
+    <title>Token Distribution Simulation</title>
+    <link rel="canonical" href="https://biip.world" />
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+        }
+
+        .flex {
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+        }
+
+        .flex-column {
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            border: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0 auto;
+            border: 0;
+        }
+
+        input {
+            border-radius: 5px;
+            border: 0;
+            background: #ffffff23;
+            max-width: 90px;
+            font-size: 12px;
+            color: white;
+            padding: 3px;
+        }
+
+        #versions button,
+        input[type=submit] {
+            margin: 0 10px;
+            display: inline-block;
+            padding: 8px 16px;
+            border: 0;
+            background: #db463e;
+            color: white;
+            border-radius: 32px;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        #configForm {
+            display: none;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 2;
+            position: fixed;
+            z-index: 23;
+            bottom: 10px;
+            left: 10px
+        }
+
+        #submit {
+            margin: 10px 0 0 0
+        }
+
+        .descr,
+        copyright,
+        copyright a,
+        copyright a:visited {
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 23px 0;
+            line-height: 1.6;
+            z-index: 23;
+            text-shadow: 0 0 10px black
+        }
+
+        copyright {
+            position: absolute;
+            bottom: 0;
+        }
+
+        .descr,
+        copyright,
+        #configForm {
+            padding: 23px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex flex-column">
+        <canvas id="simulationCanvas"></canvas>
+        <div id="versions" class="flex">
+            <button id="web2">Web 2</button>
+            <button id="web2_3">Web 2.3</button>
+            <button id="web2_6">Web 2.6</button>
+            <button id="web3">Web 3</button>
+        </div>
+        <div class="descr">
+            <b>Web 2:</b> Initial users can gain from all users, additional users can only share value with Initial
+            users.<br>
+            <b>Web 2.3:</b> Initial users can share and gain, additional users can only share value with Initial
+            users.<br>
+            <b>Web 2.6:</b> Initial users can share and gain, additional users can share value with all users.<br>
+            <b>Web 3:</b> All users share and gain value freely.
+        </div>
+        <copyright>
+            @ Copyright 2023 - <a href="https://linktr.ee/lucianape3" target="_blank">Lucian Apetrei</a> - Licensed
+            under <a href="https://github.com/GratitudeToken/BiiP.world/blob/main/LICENSE" target="_blank">GNU General
+                Public License v3.0</a>
+        </copyright>
+        <form id="configForm">
+            <div>
+                <label for="ghosting">Ghosting:</label>
+                <input type="checkbox" id="ghosting" name="ghosting">
+            </div>
+
+            <div>
+                <label for="textColor">Text Color:</label>
+                <input type="text" id="textColor" name="textColor" value="rgb(255,255,255)">
+            </div>
+
+            <div>
+                <label for="fillColor">Fill Color:</label>
+                <input type="text" id="fillColor" name="fillColor" value="rgb(0,0,0)">
+            </div>
+
+            <div>
+                <label for="particleTextColor">User Text Color:</label>
+                <input type="text" id="particleTextColor" name="particleTextColor" value="rgb(255,255,255)">
+            </div>
+
+            <div>
+                <label for="borderColor">Border Color:</label>
+                <input type="text" id="borderColor" name="borderColor" value="rgb(255,255,255)">
+            </div>
+
+            <div>
+                <label for="borderThickness">Border Thickness:</label>
+                <input type="number" id="borderThickness" name="borderThickness" value="1">
+            </div>
+
+            <div>
+                <label for="lineThickness">Line Thickness:</label>
+                <input type="number" id="lineThickness" name="lineThickness" value="3">
+            </div>
+
+            <div>
+                <label for="maxParticles">Max Users:</label>
+                <input type="number" id="maxParticles" name="maxParticles" value="1000">
+            </div>
+
+            <div>
+                <label for="minSizeRange">Min Size Range:</label>
+                <input type="number" id="minSizeRange" name="minSizeRange" value="12">
+            </div>
+
+            <div>
+                <label for="maxSizeRange">Max Size Range:</label>
+                <input type="number" id="maxSizeRange" name="maxSizeRange" value="12">
+            </div>
+
+            <div>
+                <label for="precision">Precision:</label>
+                <input type="number" id="precision" name="precision" value="8">
+            </div>
+
+            <div>
+                <label for="maxParticleSize">Max User Size:</label>
+                <input type="number" id="maxParticleSize" name="maxParticleSize" value="230">
+            </div>
+
+            <div>
+                <label for="enableMovement">Enable Movement:</label>
+                <input type="checkbox" id="enableMovement" name="enableMovement" checked>
+            </div>
+
+            <div>
+                <label for="movementSpeed">Movement Speed:</label>
+                <input type="text" id="movementSpeed" name="movementSpeed" value="1">
+            </div>
+
+            <div>
+                <label for="collisionResponse">Collision Response:</label>
+                <input type="number" id="collisionResponse" name="collisionResponse" value="1">
+            </div>
+
+            <div>
+                <label for="newParticleFrequencyMin">New User Join Frequency Min:</label>
+                <input type="number" id="newParticleFrequencyMin" name="newParticleFrequencyMin" value="1">
+            </div>
+
+            <div>
+                <label for="newParticleFrequencyMax">New User Join Frequency Max:</label>
+                <input type="number" id="newParticleFrequencyMax" name="newParticleFrequencyMax" value="6">
+            </div>
+
+            <div>
+                <label for="reselectionIntervalFixed">Reselection Interval Fixed:</label>
+                <input type="number" id="reselectionIntervalFixed" name="reselectionIntervalFixed" value="0">
+            </div>
+
+            <div>
+                <label for="reselectionIntervalRandomMin">Reselection Interval Random Min:</label>
+                <input type="number" id="reselectionIntervalRandomMin" name="reselectionIntervalRandomMin" value="1">
+            </div>
+
+            <div>
+                <label for="reselectionIntervalRandomMax">Reselection Interval Random Max:</label>
+                <input type="number" id="reselectionIntervalRandomMax" name="reselectionIntervalRandomMax" value="50">
+            </div>
+
+            <div>
+                <label for="initialParticleSizes">Initial Users Sizes:</label>
+                <input type="text" id="initialParticleSizes" name="initialParticleSizes" value="12,12,12,12">
+            </div>
+
+            <div>
+                <label for="withdrawAmount">Withdraw Amount:</label>
+                <input type="text" id="withdrawAmount" name="withdrawAmount" value="0,0,230,2300">
+            </div>
+
+            <div>
+                <label for="spendingAmount">Spending Amount:</label>
+                <input type="text" id="spendingAmount" name="spendingAmount" value="0,0,230,2300">
+            </div>
+
+            <div>
+                <label for="shareRange">Share Range:</label>
+                <input type="text" id="shareRange" name="shareRange" value="0.01,0.1,0">
+            </div>
+
+            <div>
+                <label for="gainRange">Gain Range:</label>
+                <input type="text" id="gainRange" name="gainRange" value="0.01,0.1">
+            </div>
+
+            <!-- Add similar inputs for spendingAmount, withdrawAmount, shareRange, gainRange -->
+
+            <div>
+                <input id="submit" type="submit" value="Simulate">
+            </div>
+        </form>
+
+    </div>
+
+    <!-- <script src="https://d3js.org/d3.v6.min.js"></script> -->
+
+    <script type="module">
+        import { $ } from '/js/selectors.js';
+        import { web2 } from '/js/simulations/web2.js';
+        import { web2_3 } from '/js/simulations/web2_3.js';
+        import { web2_6 } from '/js/simulations/web2_6.js';
+        import { web3 } from '/js/simulations/web3.js';
+
+        $('#web2').addEventListener('click', () => {
+            web2();
+            $('#versions').style.display = 'none'; // Hide the button after starting the simulation
+            $('.descr').style.display = 'none';
+            $('#configForm').style.display = 'block';
+        });
+
+        $('#web2_3').addEventListener('click', () => {
+            web2_3();
+            $('#versions').style.display = 'none'; // Hide the button after starting the simulation
+            $('.descr').style.display = 'none';
+            $('#configForm').style.display = 'block';
+        });
+
+        $('#web2_6').addEventListener('click', () => {
+            web2_6();
+            $('#versions').style.display = 'none'; // Hide the button after starting the simulation
+            $('.descr').style.display = 'none';
+            $('#configForm').style.display = 'block';
+        });
+
+        // Add event listener to the start button
+        $('#web3').addEventListener('click', () => {
+            web3();
+            $('#versions').style.display = 'none'; // Hide the button after starting the simulation
+            $('.descr').style.display = 'none';
+            $('#configForm').style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>

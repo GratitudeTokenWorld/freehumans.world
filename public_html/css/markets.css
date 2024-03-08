@@ -1,0 +1,293 @@
+h1 {
+    margin-top: 63px
+}
+
+#categories {
+    width: 100vw;
+    position: fixed;
+    padding-top: 100px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    color: var(--second-contrast);
+    background: linear-gradient(0deg, rgba(var(--white-rgb), 1) 0%, rgba(var(--white-rgb), 0.9) 50%, rgba(var(--white-rgb), 0) 100%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+#categories img {
+    pointer-events: all;
+}
+
+#market_location {
+    margin-bottom: 10px;
+}
+
+#market_location img {
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.squareSelection {
+    padding: 0 10px;
+    overflow: hidden;
+    width: 100vw;
+    overflow-x: auto;
+    pointer-events: all;
+}
+
+.squareSelection img {
+    display: inline-block;
+    box-sizing: content-box;
+    border-radius: 10px;
+    margin: 5px;
+    width: 64px;
+    height: 64px;
+    cursor: pointer;
+    border: 2px solid var(--main-contrast);
+    box-shadow: 0 0 10px var(--second-contrast-23);
+    opacity: 0.69
+}
+
+.squareSelection img:first-of-type {
+    margin-left: 0;
+}
+
+.squareSelection img:hover,
+.squareSelection .selected {
+    opacity: 1;
+    border-color: var(--second-contrast)
+}
+
+.market_type {
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-family: 'Dosis', Arial, sans-serif !important;
+    text-transform: uppercase;
+}
+
+#marketDescription {
+    padding: 2px 10px 0 10px;
+    margin: 0
+}
+
+#subcategories {
+    width: 100%;
+    position: fixed;
+    top: 53px;
+    margin: 0 auto;
+    padding: 0 5px 10px 5px;
+    z-index: 10;
+    background: var(--main-header-bg);
+    backdrop-filter: blur(5px);
+    white-space: nowrap;
+    overflow: hidden;
+    overflow-x: auto
+}
+
+#subcategories * {
+    pointer-events: all !important;
+    margin: 0 5px;
+    color: var(--second-contrast);
+    border-radius: 32px;
+}
+
+#subcategories button:hover,
+#subcategories button.selected {
+    background: var(--main-color);
+    color: white
+}
+
+/* 
+.carousel {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: -5px;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+}
+
+.carousel div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    transition: transform 0.23s, opacity 0.23s;
+}
+
+.carousel button {
+    background: var(--main-color);
+    border-radius: 32px;
+    box-shadow: 0 0 10px 10px var(--main-contrast);
+    opacity: 0.5;
+    cursor: default
+}
+
+.carousel div:first-of-type button {
+    opacity: 1
+} */
+
+.squareSelection #nft.selected,
+.squareSelection #regular.selected {
+    display: block;
+    white-space: nowrap;
+    text-align: left;
+}
+
+main {
+    padding-bottom: 230px !important;
+}
+
+
+#market_items {
+    padding: 23px 10px;
+}
+
+#market_items img {
+    width: 100%;
+    transition: transform 0.23s
+}
+
+#grid_filter {
+    padding: 10px 10px 0 10px
+}
+
+#grid_filter label {
+    width: 54px;
+    height: 44px;
+    background: var(--second-contrast-23);
+    opacity: 0.32;
+}
+
+#grid_filter label:hover {
+    opacity: 1;
+    background: var(--second-contrast-15)
+}
+
+#grid_filter input:checked+label {
+    background: var(--main-color);
+    opacity: 1
+}
+
+#grid_filter input:checked+label hr {
+    background: white
+}
+
+#grid_filter hr {
+    display: inline-block;
+    width: 9px;
+    height: 18px;
+    border: 0;
+    margin: 0 1px;
+    padding: 0;
+    border-radius: 3px;
+    background: var(--second-contrast)
+}
+
+item * {
+    cursor: pointer;
+}
+
+item div {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+item div img {
+    border-radius: 10px;
+}
+
+item div:hover img {
+    transform: scale(1.23) rotate(3deg);
+}
+
+item div:before {
+    z-index: 1;
+    display: block;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(23deg, rgba(0, 0, 0, 0.69) 0%, rgba(0, 0, 0, 0) 32%);
+}
+
+item b {
+    display: block;
+    padding: 10px 0 23px 0;
+    font-size: 12px
+}
+
+price {
+    font-style: normal;
+    display: block;
+    padding: 0 0 0 21px;
+    font-size: 16px;
+    font-weight: bold;
+    background: url(/svgs/gratitude-token-logo.svg) no-repeat 0 100%;
+    background-size: 16px 16px;
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    border-radius: 0;
+    z-index: 2;
+    font-family: 'Dosis', Arial, sans-serif;
+}
+
+footer {
+    bottom: 120px;
+    z-index: 4;
+}
+
+@media screen and (min-width: 950px) {
+
+    h1 {
+        margin-top: 10px;
+    }
+
+    #categories,
+    #subcategories {
+        width: 690px;
+    }
+
+    #subcategories {
+        position: sticky;
+    }
+
+    #market_items {
+        padding: 23px 0;
+    }
+
+    #grid_filter {
+        padding: 10px 0 0 0
+    }
+
+    price {
+        font-size: 23px;
+        background-size: 21px 21px;
+        padding: 0 0 0 32px;
+    }
+
+    item b {
+        font-size: 14px;
+    }
+
+    .squareSelection {
+        width: 690px;
+    }
+
+    .squareSelection #nft.selected,
+    .squareSelection #regular.selected {
+        text-align: center;
+    }
+
+    .squareSelection #nft img:last-of-type {
+        margin-right: 0;
+    }
+}

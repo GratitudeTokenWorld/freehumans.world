@@ -1,0 +1,120 @@
+#posting {
+    position: fixed;
+    width: calc(100% - 20px);
+    max-width: 650px;
+    min-height: 230px;
+    transform: scale(0);
+    margin: 0 auto;
+    padding: 10px;
+    bottom: -230px;
+    left: 0;
+    right: 0;
+    z-index: 12;
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: blur(10px);
+    color: black;
+    box-shadow: 0 5px 10px #00000069;
+    border-radius: 10px;
+    transition: all 0.5s cubic-bezier(0, 0.66, 0.74, 1.04)
+}
+
+#posting.block {
+    bottom: 120px;
+    transform: scale(1);
+}
+
+#posting.sendPostAnimation {
+    bottom: 100%;
+    transform: scale(0);
+}
+
+#posting-form .type {
+    padding: 0 0 10px 0;
+    display: grid;
+    gap: 10px;
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+}
+
+#posting-form .type label {
+    display: flex;
+    justify-content: center;
+}
+
+#posting-form label img {
+    opacity: 0.69;
+    filter: invert(1);
+    transition: all 0.23s
+}
+
+#posting-form .type input:checked+label img {
+    opacity: 1;
+    transform: scale(1.5)
+}
+
+#posting textarea {
+    width: 100%;
+    max-width: 100%;
+    min-height: 117px;
+    display: block;
+    background: #ffffff99;
+    padding: 10px;
+    border: 1px solid var(--second-contrast-23);
+    border-radius: 10px;
+    color: #232323;
+    resize: none;
+}
+
+#buttonz {
+    margin-top: 10px
+}
+
+#buttonz button {
+    background: #00000015;
+    border-radius: 32px;
+    color: black
+}
+
+#cancel-posting:hover {
+    background: var(--main-color);
+    color: white
+}
+
+#post-now:hover {
+    background: #33a728;
+    color: white
+}
+
+.postMsg {
+    padding: 10px;
+}
+
+
+
+
+.type label {
+    color: var(--second-contrast);
+    border: 0;
+    padding: 15px 10px;
+    border-radius: 10px;
+    background: transparent;
+    transition: 0.23s background-color;
+    cursor: pointer
+}
+
+.type input:checked+label,
+.type label:hover {
+    background-color: #00000023;
+}
+
+.type b {
+    display: block;
+    margin: 0 12px;
+    font-family: 'Dosis', Arial, sans-serif;
+}
+
+.type img {
+    display: block;
+    margin-right: 3px;
+    vertical-align: sub;
+}
