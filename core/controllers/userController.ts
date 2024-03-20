@@ -339,8 +339,18 @@ export const login = (app: Express) => {
 
             const privateKey = Key.PrivateKey.fromString(privateKeyShare);
             const publicDerived = privateKey.getPublicKey().toString();
-            console.log (publicDerived)
-            // Now we have to find where to get the account information from the public
+            console.log(publicDerived)
+            /* 
+            Now we have to find where to get the account information from the public
+            I use rpc.get_account, but not sure it can grab account info from public key
+            */
+            const accountInfo = await rpc.get_account(publicDerived);
+            if (accountInfo) { 
+
+                console.log(accountInfo)
+
+            }
+            
             
             const userId = userIDResult.rows[0]['userid'];
 
