@@ -3,7 +3,7 @@ import { Express } from 'express';
 import { createRateLimiter } from '../middleware/limiter';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { Api, JsonRpc, RpcError, JsSignatureProvider } from '@proton/js';
+import { Api, JsonRpc, RpcError, JsSignatureProvider,Key } from '@proton/js';
 import db from '../utils/scylladb';
 import { shamir } from '../utils/shamir'; // Shamir method
 
@@ -337,6 +337,11 @@ export const login = (app: Express) => {
                 return res.status(400).send({ message: 'Invalid secret share' });
             }
 
+            const privateKey = Key.PrivateKey.fromString(privateKeyShare);
+            const publicDerived = privateKey.getPublicKey().toString();
+            console.log (publicDerived)
+            // Now we have to find where to get the account information from the public
+            
             const userId = userIDResult.rows[0]['userid'];
 
             // Step 2: Verify UserName matches UserID in users table
