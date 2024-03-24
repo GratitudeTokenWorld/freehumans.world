@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.createPaidBlockchainAccount = exports.registerAccount = exports.checkInviter = exports.checkUsernameAvailability = void 0;
+exports.test = exports.login = exports.createPaidBlockchainAccount = exports.registerAccount = exports.checkInviter = exports.checkUsernameAvailability = void 0;
 const limiter_1 = require("../middleware/limiter");
 const path = __importStar(require("path"));
 const fs_1 = require("fs");
@@ -47,7 +47,8 @@ const mnemonic_1 = require("@proton/mnemonic");
 const defaultPrivateKey = "PVT_K1_2FA8Af2BzBXVq2wVzgKZRrRDywzEW2ZKk9t7TDdyyqSLidgkTQ"; // 58 chars key, user test1515 on testnet // this should 
 const signatureProvider = new js_1.JsSignatureProvider([defaultPrivateKey]);
 // Setting up the Proton blockchain RPC and API with a given node endpoint and a signature provider.
-const rpc = new js_1.JsonRpc('https://testnet.protonchain.com');
+const endpoint = 'https://testnet.protonchain.com';
+const rpc = new js_1.JsonRpc(endpoint);
 const api = new js_1.Api({ rpc, signatureProvider });
 // Assuming newUser is the username for which the directory is being created
 function createUserDirectory(newUser) {
@@ -153,11 +154,32 @@ const checkInviter = (app) => {
 exports.checkInviter = checkInviter;
 const registerAccount = (app) => {
     app.post('/register-account', (0, limiter_1.createRateLimiter)(10, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { email, username, invitedby } = req.body;
-        const newUser = username;
+        const { email, username, key, invitedby } = req.body;
+        // Dynamic assignment of newUser based on 'username' or 'key'
+        let newUser;
+        let finalKey;
+        // Generates a new key pair for the account, ensuring security.
+        let mnemonic = new mnemonic_1.Mnemonic();
+        const { publicKey, privateKey } = mnemonic.keyPairAtIndex(0);
+        if (key) {
+            finalKey = key;
+            const privateKey = js_1.Key.PrivateKey.fromString(key);
+            const publicKey = privateKey.getPublicKey().toString();
+            const response = yield fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+            const data = yield response.json();
+            newUser = Object.keys(data.protontest.accounts)[0];
+        }
+        else if (username) {
+            newUser = username;
+            finalKey = privateKey;
+        }
+        else {
+            return res.status(400).send({ error: 'Either key or username must be provided.' });
+        } ///// IF KEY .... THIS IS WHERE YOU MUST CHECK TO WHICH USERNAME DOES THIS PRIVATEKEY BELONG TO AND GET THAT USERNAME
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         try {
             // Basic validations
-            if (!newUser || newUser.length > 12) {
+            if (!newUser || newUser.length > 12 || newUser.length < 4) {
                 return res.status(400).send({ error: "Username is required and must be less than 13 characters." });
             }
             if (!email) {
@@ -166,7 +188,9 @@ const registerAccount = (app) => {
             // Save user data in the database
             yield saveUserData(email, newUser, invitedby);
             // Await the blockchain account creation and capture the result
-            const result = yield (0, exports.createPaidBlockchainAccount)(email, username, newUser);
+            const result = yield (0, exports.createPaidBlockchainAccount)(email, username, newUser, finalKey || '');
+            // After successful account creation, the mnemonic (and thus the private key) is cleared from memory.
+            mnemonic = null;
             // Respond with success and the blockchain creation result
             res.status(200).send({ message: 'Data saved successfully.', newUser, email, invitedby, result });
         }
@@ -184,7 +208,7 @@ const registerAccount = (app) => {
 };
 exports.registerAccount = registerAccount;
 // Function to create a new account on the Proton blockchain with paid resources (RAM, CPU, and NET).
-const createPaidBlockchainAccount = (email, user, newUser) => __awaiter(void 0, void 0, void 0, function* () {
+const createPaidBlockchainAccount = (email, user, newUser, pvt_key) => __awaiter(void 0, void 0, void 0, function* () {
     //Buys RAM for the new account to ensure sufficient resources for account creation.
     // try {
     //     await api.transact({
@@ -208,9 +232,6 @@ const createPaidBlockchainAccount = (email, user, newUser) => __awaiter(void 0, 
     // }
     // create the account
     try {
-        // Generates a new key pair for the account, ensuring security.
-        let mnemonic = new mnemonic_1.Mnemonic();
-        const { publicKey, privateKey } = mnemonic.keyPairAtIndex(0);
         // Proceeds to create the new account with the new public key and bought resources.
         // const result = await api.transact({
         //     "actions": [
@@ -278,11 +299,14 @@ const createPaidBlockchainAccount = (email, user, newUser) => __awaiter(void 0, 
         //     blocksBehind: 3,
         //     expireSeconds: 30,
         // });
-        console.log(privateKey);
+        console.log(pvt_key); // must be removed in production
         // shamir the privateKey 
-        (0, shamir_1.shamir)(email, user, privateKey).catch(console.error); //...now what ?
-        // After successful account creation, the mnemonic (and thus the private key) is cleared from memory.
-        mnemonic = null;
+        if (!pvt_key || pvt_key === '') {
+            return 'No private key passed to createPaidBlockchainAccount fn.';
+        }
+        else {
+            (0, shamir_1.shamir)(email, user, pvt_key).catch(console.error);
+        }
         // Optionally, creates a directory for user-specific data.
         let userDirectory = '';
         if (process.env.NODE_ENV === 'production') {
@@ -294,8 +318,8 @@ const createPaidBlockchainAccount = (email, user, newUser) => __awaiter(void 0, 
         createUserDirectory(newUser);
         // Responds with the transaction result indicating successful account creation.
         //return result;
-        console.log(privateKey);
-        return 'gigi';
+        console.log(pvt_key);
+        return 'User saved in DB, Blockchain Account Created, Shares sent.';
     }
     catch (e) {
         //console.error('\nCaught exception: ', e);
@@ -377,7 +401,7 @@ const login = (app) => {
             if (!sessionFoundAndValid) {
                 return res.status(400).send({ message: 'Session not found or does not match login attempt' });
             }
-            return res.send({ userName: userName });
+            return res.send({ userName: userName, userID: userId });
         }
         catch (error) {
             console.error('Error processing login', error);
@@ -386,3 +410,14 @@ const login = (app) => {
     }));
 };
 exports.login = login;
+// TEST FUNCTION
+const test = (app) => {
+    app.get('/test', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const privateKey = js_1.Key.PrivateKey.fromString(defaultPrivateKey);
+        const publicKey = privateKey.getPublicKey().toString();
+        const response = yield fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+        const data = yield response.json();
+        console.log(Object.keys(data.protontest.accounts)[0]);
+    }));
+};
+exports.test = test;

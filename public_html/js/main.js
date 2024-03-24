@@ -44,6 +44,8 @@ $$('.messages').forEach(el => {
     })
 })
 
+$('#markets_section') ? markets_section.addEventListener('click', e => { window.location = "/markets.html"; }) : null;
+
 // NOTIFICATIONS
 $('#notifications') ? $('#notifications').addEventListener('click', e => {
     $('#user-menu').classList.remove('show')
@@ -128,7 +130,10 @@ $('#timelineLink') ? $('#timelineLink').addEventListener('click', e => { window.
 $('#search-btn') ? $('#search-btn').addEventListener('click', e => {
     sounds = defaultSounds('lucianape3', null, null)
     if (sounds) {
-        !$('.showSearch') ? sounds[18].play() : sounds[20].play();;
+        if (!$('.showSearch')) {
+            sounds[18].play();
+            searchThis.focus();
+        } else { sounds[20].play(); }
     }
     $('body').classList.toggle('showSearch')
 }) : null;

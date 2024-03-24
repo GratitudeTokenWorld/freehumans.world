@@ -1,317 +1,14 @@
 import { $, $$ } from '/js/selectors.js';
 import { throttle } from '/js/throttle_scroll.js';
 import { confetti } from '/js/confetti.js';
-
-// General Functions
-const fnRequestAnimationFrame = (fnCallback) => {
-    const fnAnimFrame =
-        window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        ((fnCallback) => {
-            window.setTimeout(fnCallback, 1000 / 60);
-        });
-
-    fnAnimFrame(fnCallback);
-};
-// Add Event Listener
-const sphereListener = (o, sEvent, fn) => {
-    if (o.addEventListener) {
-        o.addEventListener(sEvent, fn, false);
-    } else {
-        o['on' + sEvent] = fn;
-    }
-};
-const sphere = () => {
-    // const oStats = new Stats();
-    // oStats.setMode(0);
-    // oStats.domElement.style.position = 'absolute';
-    // oStats.domElement.style.left = '0px';
-    // oStats.domElement.style.top = '0px';
-    // document.body.appendChild(oStats.domElement);
-
-    // General Elements
-    const oDoc = document;
-    const nBody = oDoc.body;
-    // Shortcuts
-    const fPI = Math.PI;
-    const fnMax = Math.max;
-    const fnMin = Math.min;
-    const fnRnd = Math.random;
-    const fnRnd2 = () => 2.0 * fnRnd() - 1.0;
-    const fnCos = Math.cos;
-    const fnACos = Math.acos;
-    const fnSin = Math.sin;
-    // Sphere Settings
-    const iRadiusSphere = 150;
-    let iProjSphereX = 0;
-    let iProjSphereY = 0;
-    // Particle Settings
-    const fMaxAX = 0.1;
-    const fMaxAY = 0.1;
-    const fMaxAZ = 0.1;
-    const fStartVX = 0.001;
-    const fStartVY = 0.001;
-    const fStartVZ = 0.001;
-    let fAngle = 0.0;
-    let fSinAngle = 0.0;
-    let fCosAngle = 0.0;
-
-    window.iFramesToRotate = 2000.0;
-    window.iPerspective = 250;
-    window.iNewParticlePerFrame = 1;
-    window.fGrowDuration = 200.0;
-    window.fWaitDuration = 50.0;
-    window.fShrinkDuration = 250.0;
-    window.aColor = [255, 255, 255];
-
-    const fVX = (2.0 * fPI) / window.iFramesToRotate;
-
-    let oRadGrad = null;
-    const ctxRender = particlesCanvas.getContext('2d');
-
-    const oRender = { pFirst: null };
-    const oBuffer = { pFirst: null };
-
-    let w = 0;
-    let h = 0;
-
-    // gets/sets size
-    const fnSetSize = () => {
-        particlesCanvas.width = w = window.innerWidth;
-        particlesCanvas.height = h = window.innerHeight;
-        iProjSphereX = w / 2;
-        iProjSphereY = h / 2;
-        return { w: w, h: h };
-    };
-
-    fnSetSize();
-
-    // window.onresize
-    sphereListener(window, 'resize', fnSetSize);
-
-    const fnSwapList = (p, oSrc, oDst) => {
-        if (p) {
-            // remove p from oSrc
-            if (oSrc.pFirst === p) {
-                oSrc.pFirst = p.pNext;
-                if (p.pNext) p.pNext.pPrev = null;
-            } else {
-                p.pPrev.pNext = p.pNext;
-                if (p.pNext) p.pNext.pPrev = p.pPrev;
-            }
-        } else {
-            // create new p
-            p = new Particle();
-        }
-
-        p.pNext = oDst.pFirst;
-        if (oDst.pFirst) oDst.pFirst.pPrev = p;
-        oDst.pFirst = p;
-        p.pPrev = null;
-        return p;
-    };
-
-    // Particle
-    class Particle {
-        // Current Position
-        fX = 0.0;
-        fY = 0.0;
-        fZ = 0.0;
-        // Current Velocity
-        fVX = 0.0;
-        fVY = 0.0;
-        fVZ = 0.0;
-        // Current Acceleration
-        fAX = 0.0;
-        fAY = 0.0;
-        fAZ = 0.0;
-        // Projection Position
-        fProjX = 0.0;
-        fProjY = 0.0;
-        // Rotation
-        fRotX = 0.0;
-        fRotZ = 0.0;
-        // double linked list
-        pPrev = null;
-        pNext = null;
-
-        fAngle = 0.0;
-        fForce = 0.0;
-
-        fGrowDuration = 0.0;
-        fWaitDuration = 0.0;
-        fShrinkDuration = 0.0;
-
-        fRadiusCurrent = 0.0;
-
-        iFramesAlive = 0;
-        bIsDead = false;
-
-        fnInit = () => {
-            this.fAngle = fnRnd() * fPI * 2;
-            this.fForce = fnACos(fnRnd2());
-            this.fAlpha = 0;
-            this.bIsDead = false;
-            this.iFramesAlive = 0;
-            this.fX = iRadiusSphere * fnSin(this.fForce) * fnCos(this.fAngle);
-            this.fY = iRadiusSphere * fnSin(this.fForce) * fnSin(this.fAngle);
-            this.fZ = iRadiusSphere * fnCos(this.fForce);
-            this.fVX = fStartVX * this.fX;
-            this.fVY = fStartVY * this.fY;
-            this.fVZ = fStartVZ * this.fZ;
-            this.fGrowDuration = window.fGrowDuration + fnRnd2() * (window.fGrowDuration / 4.0);
-            this.fWaitDuration = window.fWaitDuration + fnRnd2() * (window.fWaitDuration / 4.0);
-            this.fShrinkDuration = window.fShrinkDuration + fnRnd2() * (window.fShrinkDuration / 4.0);
-            this.fAX = 0.0;
-            this.fAY = 0.0;
-            this.fAZ = 0.0;
-        };
-
-        fnUpdate = () => {
-            if (this.iFramesAlive > this.fGrowDuration + this.fWaitDuration) {
-                this.fVX += this.fAX + fMaxAX * fnRnd2();
-                this.fVY += this.fAY + fMaxAY * fnRnd2();
-                this.fVZ += this.fAZ + fMaxAZ * fnRnd2();
-                this.fX += this.fVX;
-                this.fY += this.fVY;
-                this.fZ += this.fVZ;
-            }
-
-            this.fRotX = fCosAngle * this.fX + fSinAngle * this.fZ;
-            this.fRotZ = -fSinAngle * this.fX + fCosAngle * this.fZ;
-            this.fRadiusCurrent = Math.max(0.01, window.iPerspective / (window.iPerspective - this.fRotZ));
-            this.fProjX = this.fRotX * this.fRadiusCurrent + iProjSphereX;
-            this.fProjY = this.fY * this.fRadiusCurrent + iProjSphereY;
-
-            this.iFramesAlive += 1;
-
-            if (this.iFramesAlive < this.fGrowDuration) {
-                this.fAlpha = this.iFramesAlive * 1.0 / this.fGrowDuration;
-            } else if (this.iFramesAlive < this.fGrowDuration + this.fWaitDuration) {
-                this.fAlpha = 1.0;
-            } else if (this.iFramesAlive < this.fGrowDuration + this.fWaitDuration + this.fShrinkDuration) {
-                this.fAlpha = (this.fGrowDuration + this.fWaitDuration + this.fShrinkDuration - this.iFramesAlive) * 1.0 / this.fShrinkDuration;
-            } else {
-                this.bIsDead = true;
-            }
-
-            if (this.bIsDead) {
-                fnSwapList(this, oRender, oBuffer);
-            }
-
-            this.fAlpha *= fnMin(1.0, fnMax(0.5, this.fRotZ / iRadiusSphere));
-            this.fAlpha = fnMin(1.0, fnMax(0.0, this.fAlpha));
-        };
-    }
-
-    const fnRender = () => {
-        ctxRender.fillStyle = "#000";
-        ctxRender.fillRect(0, 0, w, h);
-
-        let p = oRender.pFirst;
-        let iCount = 0;
-        while (p) {
-            ctxRender.fillStyle = "rgba(" + window.aColor.join(',') + ',' + p.fAlpha.toFixed(4) + ")";
-            ctxRender.beginPath();
-            ctxRender.arc(p.fProjX, p.fProjY, p.fRadiusCurrent, 0, 2 * fPI, false);
-            ctxRender.closePath();
-            ctxRender.fill();
-            p = p.pNext;
-            iCount += 1;
-        }
-    };
-
-    const fnNextFrame = () => {
-        //oStats.begin();
-        fAngle = (fAngle + fVX) % (2.0 * fPI);
-        fSinAngle = fnSin(fAngle);
-        fCosAngle = fnCos(fAngle);
-
-        let iAddParticle = 0;
-        let iCount = 0;
-        while (iAddParticle++ < window.iNewParticlePerFrame) {
-            const p = fnSwapList(oBuffer.pFirst, oBuffer, oRender);
-            p.fnInit();
-        }
-
-        let p = oRender.pFirst;
-        while (p) {
-            const pNext = p.pNext;
-            p.fnUpdate();
-            p = pNext;
-            iCount++;
-        }
-        fnRender();
-
-        //oStats.end();
-        fnRequestAnimationFrame(() => fnNextFrame());
-    };
-
-    fnNextFrame();
-
-    // const gui = new dat.GUI();
-    // gui.add(window, 'fGrowDuration').min(10).max(500).step(1);
-    // gui.add(window, 'fWaitDuration').min(10).max(500).step(1);
-    // gui.add(window, 'fShrinkDuration').min(10).max(500).step(1);
-    // gui.add(window, 'iPerspective').min(150).max(1000).step(1);
-    // gui.add(window, 'iNewParticlePerFrame').min(1).max(20).step(1);
-    // gui.add(window, 'iFramesToRotate').min(50).max(2500).step(50).onChange(() => {
-    //     fVX = (2.0 * fPI) / window.iFramesToRotate;
-    // });
-    // gui.addColor(window, 'aColor').onChange(() => {
-    //     window.aColor[0] = ~~window.aColor[0];
-    //     window.aColor[1] = ~~window.aColor[1];
-    //     window.aColor[2] = ~~window.aColor[2];
-    // });
-    // if (window.innerWidth < 1000) {
-    //     gui.close();
-    //     window.iNewParticlePerFrame = 5;
-    // }
-
-    // window.app = this;
-};
-
+//import { fnRequestAnimationFrame, sphereListener, sphere } from '/js/sphere.js';
+// fnRequestAnimationFrame();
+// sphereListener();
+// sphere();
 // SHOW THE SPHERE ONLY IF AUTHENTICATED
 //sphereListener(window, 'load', sphere);
 
-export const url = 'http://' + location.hostname + ':5000/' //localhost
-//export const url = 'https://' + location.hostname + ':5000/' //production
-
-// re-generate session token on page load every 15 mins
-fetch(`${url}generate-token?purpose=session`).then(response => {
-    return response.json()
-}).then(data => {
-    localStorage.setItem('session', data.token);
-}).catch(error => {
-    console.log(error);
-})
-
-// Function to authenticate every action that is either a private user action or authorisation, a blockchain transaction or revealing private info
-const authenticateUser = async (user, secret_share) => {
-    fetch(`${url}login`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            token: localStorage.getItem('session'),
-            user: user,
-            secret: secret_share,
-            purpose: 'session'
-        })
-    }).then(response => response.json()).then(data => {
-        if (data.userName === user) {
-            return true
-        } else {
-            return false
-        }
-    }).catch(error => {
-        console.log(error);
-    })
-} // this output's boolean
+import { url, authenticateUser } from '/js/login.js';
 
 let FaceIDToken = localStorage.getItem('FaceIDToken') | null; // if it's null it means the FaceID token is missing.
 
@@ -323,7 +20,7 @@ const hideGroups = () => {
     });
 }
 
-secret.addEventListener('click', e => {
+showLogin.addEventListener('click', e => {
     e.preventDefault();
     first_action.classList.add('hide');
     authentication.classList.remove('hide');
@@ -336,10 +33,10 @@ authentication.addEventListener('submit', e => {
 
     // LOGIN
     try {
-        if (authenticateUser(user, secret_share.value)) {
-            localStorage.setItem('authenticatedUser', user);
+        if (authenticateUser(user, secret_share.value)) { // if it returns true
             authentication.classList.add('hide');
-            $('.overlay').style.display = ''
+            $('.overlay').style.display = '';
+            window.location = '/profile.html'
         };
     } catch (e) {
         if (!(e instanceof Error)) {
@@ -361,7 +58,7 @@ const identity = () => {
     $('.overlay').style.display = 'flex'
 
     if (localStorage.getItem('retryUserCreation')) {
-        register.classList.add('hide');
+        register_form.classList.add('hide');
         first_action.classList.add('hide');
         CreateFaceContainer.classList.remove('hide');
         h3.style.color = '';
@@ -384,12 +81,12 @@ $('.freeuser').addEventListener('click', e => {
 close_overlay.addEventListener('click', e => {
     $('.overlay').style.display = 'none';
     first_action.style.display = '';
-    register.classList.add('hide');
+    register_form.classList.add('hide');
     authentication.classList.add('hide');
     h3.innerHTML = '';
 })
 
-createUser.addEventListener('click', e => {
+register.addEventListener('click', e => {
     e.preventDefault();
     currentStep = 0;
     email.value = '';
@@ -399,13 +96,13 @@ createUser.addEventListener('click', e => {
     $('.form-group:first-of-type').style.display = 'block';
     continueForm.value = 'Continue';
     backForm.style.display = 'none';
-    register.classList.remove('hide');
+    register_form.classList.remove('hide');
     first_action.classList.add('hide');
     email.focus();
 })
 
 const urlParams = new URLSearchParams(window.location.search);
-const invitedby = urlParams.get('invited_by');
+const invitedby = urlParams.get('inviter');
 invitedByUser.value = invitedby;
 
 // CREATE ACCOUNT - MULTIPLE STEPS FORM
@@ -436,9 +133,6 @@ const verifyCode = (code) => {
                 updateInputVisibility();
                 $('#code15').classList.add('hide');
                 sendCode.classList.add('hide');
-                setTimeout(() => {
-                    dob.showPicker()
-                }, '100')
             }
         }).catch(error => {
             console.log(error);
@@ -509,6 +203,23 @@ function updateInputVisibility() {
     backForm.style.display = currentStep > 0 ? 'inline-block' : 'none';
 }
 
+importKey.addEventListener('change', e => {
+    if (importKey.checked) {
+        username.disabled = true;
+        $('.PVT_Key').classList.remove('hide');
+        $('.criteria').classList.remove('block');
+        $('.username').classList.add('hide');
+        PVT_Key.focus();
+    } else {
+        PVT_Key.value = '';
+        username.disabled = false;
+        $('.PVT_Key').classList.add('hide');
+        $('.criteria').classList.add('block');
+        $('.username').classList.remove('hide');
+        username.focus();
+    }
+})
+
 const createAccount = () => {
     h3.innerHTML = 'Creating user account ...';
 
@@ -521,6 +232,17 @@ const createAccount = () => {
         confetti($('#confetti'), continueForm);
     }
 
+    const user = localStorage.getItem('username');
+
+    let usernameOrKey;
+
+    // we send either a username or a key
+    if (user > 12) {
+        usernameOrKey = { key: PVT_Key.value };
+    } else if (user >= 4 && user <= 12) {
+        usernameOrKey = { username: user };
+    }
+
 
     fetch(`${url}register-account`, {
         method: "POST",
@@ -529,13 +251,13 @@ const createAccount = () => {
         },
         body: JSON.stringify({
             email: localStorage.getItem('email').toLowerCase(),
-            username: localStorage.getItem('username'),
+            ...usernameOrKey,
             invitedby: localStorage.getItem('invitedby').toLowerCase()
         })
     })
         .then(response => {
             if (response.status === 200) {
-                h3.innerHTML = `User <b style="font-size: 18px">${localStorage.getItem('username')}</b> created successfully.`;
+                h3.innerHTML = `User <b style="font-size: 18px">${user}</b> created successfully.`;
             };
             if (response.status === 409) {
                 h3.innerHTML = 'Email already in use. Please clear cache and try again.';
@@ -552,7 +274,7 @@ const createAccount = () => {
             console.log(data);
 
             if (data.message == 'Data saved successfully.') {
-                actions('green', `User <b style="font-size: 18px">${localStorage.getItem('username')}</b> created successfully.`)
+                actions('green', `User <b style="font-size: 18px">${user}</b> created successfully.`)
             } else {
                 retryCreateAccount();
                 console.log(data.result.message)
@@ -602,7 +324,7 @@ continueForm.addEventListener('click', async function (e) {
         localStorage.setItem('retryUserCreation', username.value);
 
         messages.innerHTML = '';
-        register.classList.add('hide');
+        register_form.classList.add('hide');
         CreateFaceContainer.classList.remove('hide');
 
         createAccount();
@@ -627,17 +349,18 @@ continueForm.addEventListener('click', async function (e) {
             messages.innerHTML = 'An error occurred while checking the email.';
             return; // Stop the function here if there was an error checking the email
         }
+
+        code15.classList.remove('block');
     }
 
     if (currentInput.checkValidity()) {
-
-        // email verification step
         if (currentStep === 0) {
             verifyCode(code15.value);
         } else {
-            currentStep++;
-            updateInputVisibility();
-            code15.classList.remove('block');
+            if (!importKey.checked || PVT_Key.checkValidity()) {
+                currentStep++;
+                updateInputVisibility();
+            }
 
             if (currentStep === 2) {
                 checkInviter(invitedByUser.value)
@@ -646,6 +369,10 @@ continueForm.addEventListener('click', async function (e) {
     } else {
         // If the input is not valid, trigger the browser's default error message
         currentInput.reportValidity();
+    }
+
+    if (importKey.checked) {
+        $('.criteria').classList.remove('block');
     }
 });
 
@@ -660,6 +387,9 @@ invitedByUser.addEventListener('keyup', function (e) {
 // Handle the back button functionality
 code15.addEventListener('input', function (e) {
     e.preventDefault();
+    if ($('#importKey').checked) {
+        $('.criteria').classList.remove('block');
+    }
     if (code15.value.length === 6) {
         sentEmail = email.value;
         verifyCode(code15.value);
@@ -728,6 +458,10 @@ backForm.addEventListener('click', function (e) {
             sendCode.classList.remove('block');
         }
     }
+
+    if (importKey.checked) {
+        $('.criteria').classList.remove('block');
+    }
     //console.log('Back current step: ' + currentStep)
 });
 
@@ -738,7 +472,7 @@ function checkUsernameCriteria() {
     const minCharCheck = username.value.length >= 4;
     const maxCharCheck = username.value.length <= 12;
     const lowercaseNumbersCheck = /^[a-z1-5]+$/.test(username.value);
-    continueForm.disabled = true;
+    continueForm.disabled = true
     const checkUserIcon = $('.criteria img:last-of-type');
 
     let randomPositionInterval = null;

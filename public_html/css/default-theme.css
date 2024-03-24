@@ -21,7 +21,7 @@
     --second-contrast-69: #00000069;
     --second-contrast-99: #00000099;
     --button-bg: #eaeaea;
-    --free-user: darken;
+    --free-user: difference;
     --text: #fffcd9;
 
     --dots: #00000015 url(/svgs/dots.svg) no-repeat 50% 50%;
@@ -50,7 +50,7 @@
     --image-user-shadow: #000000;
 
     --invert1: invert(0);
-    --invert2: invert(1);
+    --invert0: invert(1);
     --contrast-filter: contrast(1);
     --brightness: brightness(1);
 

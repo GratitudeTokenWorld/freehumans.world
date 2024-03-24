@@ -1,5 +1,5 @@
 #subheader {
-    position: fixed;
+    position: sticky;
     top: 53px;
     width: 100%;
     z-index: 10;
@@ -78,7 +78,7 @@
     display: inline-block;
     min-width: 50%;
     max-height: 50%;
-    filter: var(--invert2);
+    filter: var(--invert0);
     transition: 0.23s filter
 }
 
@@ -108,7 +108,7 @@
     }
 
     #filters:not(.expand) .mixed img {
-        filter: var(--invert2)
+        filter: var(--invert0)
     }
 
     #filters label img {

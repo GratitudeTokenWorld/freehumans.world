@@ -18,6 +18,7 @@ function generateRandomToken(): string {
 
 export const generateToken = (app: Express) => {
     app.get('/generate-token', createRateLimiter(15, 15), async (req, res) => {
+
         const purpose = req.query.purpose as string;
         const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 

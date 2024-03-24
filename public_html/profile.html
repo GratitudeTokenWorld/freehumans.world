@@ -13,6 +13,7 @@
     <link rel="manifest" href="/favicon/site.webmanifest">
     <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <!-- Custom WebSafe Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,17 +26,17 @@
     <!-- << SPECIFIC HEAD CODE: Start >> -->
     <meta name="description" content="Beyond Social Media">
     <!-- Open Graph -->
-    <meta property="og:title" content="BiiP.world" />
+    <meta property="og:title" content="FreeHumans.World" />
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Beyond Social Media" />
-    <meta property="og:image" content="https://BiiP.world/img/biip.png" />
-    <meta property="og:url" content="https://BiiP.world" />
-    <meta property="og:site_name" content="BiiP.world" />
+    <meta property="og:image" content="https://FreeHumans.World/img/biip.png" />
+    <meta property="og:url" content="https://FreeHumans.World" />
+    <meta property="og:site_name" content="FreeHumans.World" />
 
     <!-- Twitter Cards -->
-    <meta name="twitter:title" content="BiiP.world">
+    <meta name="twitter:title" content="FreeHumans.World">
     <meta name="twitter:description" content="Beyond Social Media">
-    <meta name="twitter:image" content="https://biip.world/img/biip-twitter.png">
+    <meta name="twitter:image" content="https://FreeHumans.World/img/biip-twitter.png">
     <meta name="twitter:site" content="@Gratitude_World">
     <meta name="twitter:creator" content="@Lucian_Apetrei">
 
@@ -48,7 +49,7 @@
 
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/profile.css">
-    <link rel="canonical" href="https://biip.world" />
+    <link rel="canonical" href="https://FreeHumans.World" />
 </head>
 
 <body class="profile">
@@ -306,7 +307,8 @@
         <div class="main-header flex justify-between">
             <div class="main-header flex justify-between">
                 <div class="balances">
-                    <a href="/"><img title="Home" class="L_icon inline-block invert2" src="/svgs/biip-logo.svg" /></a>
+                    <a href="/" class="logo"><img title="Home" class="L_icon inline-block invert2"
+                            src="/svgs/FHW.svg" /></a>
                     <span class="like2give-balance" title="Like2Give balance">23,000</span>
                     <span class="share2earn-balance" title="Share2Earn balance">2,300</span>
                 </div>
@@ -383,7 +385,7 @@
                                 <bag class="L_icon rookie_bag used" title="Rookie Bag (4 slots)"></bag>
                                 <!-- Rookie bag adds NFT 4 slots -->
                                 <wallet class="fiat L_icon" title="fiat currency wall... 🤢 hurl!"></wallet>
-                                <keychain class="L_icon" title="Crypto Keys"></keychain>
+                                <keychain class="L_icon" title="Backup Secret Key"></keychain>
                             </bag_menu>
                             <bags_space class="grid5">
                                 <nft id="nft-123" class="equipped legendary_inner_glow"><img draggable="true"
@@ -420,6 +422,9 @@
                             <button id="messages" class="messages" title="Messages"><img class="M_icon invert-1"
                                     src="/svgs/chat.svg">
                                 <span>Messages</span></button>
+                            <button id="markets_section" class="markets_section" title="Markets"><img
+                                    class="M_icon invert-1" src="/svgs/cart.svg">
+                                <span>Markets</span></button>
                             <!-- Hide login button when authenticated. -->
                             <button id="login" class="login" title="Connect Account"><img class="M_icon"
                                     alt="Connect wallet - Unlocked" src="/svgs/qr.svg" /> <span>Connect
@@ -467,20 +472,18 @@
             loads the correct animation or effect from the server. Can also contain sound effects. -->
         </div>
         <div class="distribution-stats grid2 gap10">
-            <span class="l2g" title="Tokens Received"><img class="S_icon" src="/svgs/like.svg" /> 6,900</span>
-            <span class="s2e" title="Tokens distributed"><img class="S_icon" src="/svgs/share.svg" /> 15,000</span>
+            <span class="l2g" title="Earned through likes"><img class="S_icon" src="/svgs/like.svg" /> 6,900</span>
+            <span class="s2e" title="Earned through sharing"><img class="S_icon" src="/svgs/share.svg" /> 15,000</span>
         </div>
-        <button class="send" title="Send GRAT"><img class="S_icon" src="/svgs/gratitude-token-logo.svg" /><img
-                class="M_icon invert1" src="/svgs/arrow-right.svg" /></button>
-        <button class="username" title="Copy URL">@lucian</button>
-        <a class="holdings" title="Like2Give balance" href="https://explorer.xprnetwork.org/account/grat"
-            target="_blank">23.000</a>
         <h1 class="user_name" title="Full Name"><span>Lucian Apetrei</span></h1>
-        <b class="level_and_title">
-            <profile_title title="Title">Creator of butterflies</profile_title>
-            <level class="levelrange6" title="Click to inspect">Level 69 <img src="/svgs/eye.svg" /></level>
-            <!-- We have 6 ranges here, make sure to update the colors depending on the level of each user -->
-        </b>
+        <profile_title title="Title">Creator of butterflies</profile_title>
+        <level class="levelrange6" title="Click to inspect">Level 69 <img src="/svgs/eye.svg" /></level><br>
+        <!-- We have 6 ranges here, make sure to update the colors depending on the level of each user -->
+        <button class="following" title="Following?"><img class="M_icon invert1" src="/svgs/bell.svg" /></button><button
+            class="username" title="Copy URL">@lucian</button><button class="send" title="Send GRAT"><img class="S_icon"
+                src="/svgs/gratitude-token-logo.svg" /><img class="M_icon invert1"
+                src="/svgs/arrow-right.svg" /></button><a class="total_earned mr0" title="Total Earned"
+            href="https://explorer.xprnetwork.org/account/lucianape3" target="_blank">21,900</a>
         <p class="living" title="Living la vida loca in?"><img class="M_icon invert2" src="/svgs/globe.svg" /> Bucharest
         </p>
         <div class="flex-center">
@@ -507,6 +510,7 @@
                 </div>
                 <div class="blip"></div>
             </div>
+            <!-- HERE WE SHOW IF THE CONNECTION IS MUTUAL OR NOT AND DISPLAY THIS by showing a 50% progress bar circle around the button -->
             <div id="block" title="Block"><img class="invert2" src="/svgs/block.svg"></div>
         </div>
         <div class="stats grid3 gap10">
@@ -520,7 +524,7 @@
                 title="Users sharing my post in the first week (Averaged over 30 days, relative to connections, but not limited to)">
                 Shareability<b>50%</b></div>
             <div
-                title="Users engaging in conversation in the first week of a post (Averaged over 30 days, relative to connections, but not limited to)">
+                title="Users engaging through likes or comments (Averaged over 30 days, relative to connections, but not limited to)">
                 Engagement<b>32%</b>
             </div>
         </div>
@@ -578,8 +582,6 @@
             <img src="/avatars/lucianape3.webp" />
             MIXED CONTENT
         </h2>
-        <!-- GAMIFICATION BANANZA !!! -->
-        <!-- DON'T FORGET ABOUT ACHIEVEMENTS IN PROFILE PAGE, STATUSES AND LEVELING SYSTEM -->
 
         <!-- HERE'S AN INTERESTING IDEA.
         Put a 23H limit on all important actions with a visible cooldown indicator in the header or somewhere on profile... for both own account or interacting with another account (user).
@@ -591,7 +593,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/img/lucian.jpg" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -630,7 +632,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -670,7 +672,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -705,7 +707,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -785,7 +787,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -820,7 +822,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -859,7 +861,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -894,7 +896,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -960,7 +962,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -1006,7 +1008,7 @@
                         <a class="small_avatar" href="/profile.html"><img src="/avatars/lucianape3.webp" /></a>
                         <div class="name_bio">
                             <h3><a href="/profile.html">Lucian Apetrei @lucian</a></h3>
-                            <span class="bio">Creator of BiiP.world | Just now</span>
+                            <span class="bio">Creator of FreeHumans.World | Just now</span>
                         </div>
                     </div>
                     <div class="post_virality flex-center" title="Virality"><img class="L_icon"
@@ -1078,7 +1080,7 @@
     </footer>
 
     <tooltip>
-        <title class="legendary">The Sword of a Thousand Truths</title>
+        <nft_title class="legendary">The Sword of a Thousand Truths</nft_title>
         <subtitle>Legendary One-Handed Sword</subtitle>
         <item_level class="t_yellow"><b>Item Level</b> 1000</item_level>
         <binding>Binds when aquired</binding>

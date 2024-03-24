@@ -70,7 +70,7 @@ const PROTON_TESTNET_EP = [
 const MAINET_CHAINID = "384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0"
 const TESTNET_CHAINID = "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd"
 
-const appIdentifier = "BiiP.world"
+const appIdentifier = "FreeHumans.World"
 const chainId = MAINET_CHAINID
 const endpoints = PROTON_MAINNET_EPS
 
@@ -242,7 +242,7 @@ export const login = async (restoreSession) => {
         },
         // This is the wallet selector style options available
         selectorOptions: {
-            appName: "BiiP.world",
+            appName: "FreeHumans.World",
             appLogo: "/favicon/biip-favicon.svg",
             customStyleOptions: {
                 modalBackgroundColor: "#F4F7FA",

@@ -48,8 +48,9 @@
     --main-color: #db463e;
     --image-user: #ffffff;
     --image-user-shadow: #000000;
+
     --invert1: invert(1);
-    --invert2: invert(0);
+    --invert0: invert(0);
     --contrast-filter: contrast(0);
     --brightness: brightness(0.32);
 

@@ -44,7 +44,7 @@ logo mask rect {
     border: 0;
     background: var(--second-contrast-15);
     color: var(--main-contrast);
-    border-radius: 10px;
+    border-radius: 6px;
     padding: 8px 16px;
     min-width: 87px;
     height: 32px;
@@ -146,6 +146,14 @@ logo mask rect {
     padding: 23px
 }
 
+.pt23 {
+    padding-top: 23px
+}
+
+.mr0 {
+    margin-right: 0 !important;
+}
+
 .mt0 {
     margin-top: 0 !important
 }
@@ -164,6 +172,10 @@ logo mask rect {
 
 .mt23 {
     margin-top: 23px;
+}
+
+.mb23 {
+    margin-bottom: 23px !important;
 }
 
 .S_icon,
@@ -277,7 +289,7 @@ logo mask rect {
 }
 
 .invert2 {
-    filter: var(--invert2)
+    filter: var(--invert0)
 }
 
 
@@ -433,7 +445,7 @@ body .blur-it {
 }
 
 .table1 td {
-    font-size: 10px;
+    font-size: 14px;
     color: var(--second-contrast-99)
 }
 
@@ -659,7 +671,7 @@ body .blur-it {
     left: 0;
     position: absolute !important;
     background-image: url(/svgs/biip-logo.svg);
-    filter: var(--invert2)
+    filter: var(--invert0)
 }
 
 .connect_page .blip {
@@ -706,6 +718,10 @@ body .blur-it {
 }
 
 @media screen and (max-width: 950px) {
+
+    .table1 td {
+        font-size: 12px;
+    }
 
     #close_overlay {
         right: 23px;

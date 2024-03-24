@@ -10,8 +10,10 @@
 @import url("/css/posting.css");
 @import url("/css/tooltips.css");
 
-main {
-  padding: 53px 0 !important;
+.logo img {
+  margin: 17px 10px 0 0;
+  height: auto;
+  width: 40px;
 }
 
 .posts {
@@ -74,7 +76,7 @@ article a:visited {
 }
 
 .content_type {
-  padding: calc(12vw + 20px) 0 23px 0;
+  padding: 23px 0;
   text-transform: uppercase;
   font-size: 23px;
   font-family: 'Dosis', Arial, sans-serif !important;
@@ -229,7 +231,7 @@ audio {
 .edit img,
 .autorepin img,
 .boost img {
-  filter: var(--invert2) !important
+  filter: var(--invert0) !important
 }
 
 .categorize img,
@@ -304,6 +306,11 @@ body.showSearch #search_container {
   opacity: 1;
   pointer-events: all !important;
   transform: scale(1)
+}
+
+.showSearch #search-btn img {
+  content: url('/svgs/close.svg');
+  filter: invert(1)
 }
 
 #search_container form {
@@ -833,10 +840,6 @@ page b {
   .messages_header {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-  }
-
-  .content_type {
-    padding-top: 100px
   }
 
   .textContent p {

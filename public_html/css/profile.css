@@ -72,7 +72,7 @@ xp p {
     font-size: 23px;
 }
 
-.level_and_title {
+profile_title {
     font-weight: 300;
     font-family: 'Dosis', Arial, sans-serif !important;
     font-size: 12px;
@@ -95,7 +95,7 @@ level {
 
 level img {
     vertical-align: middle !important;
-    filter: var(--invert2);
+    filter: var(--invert0);
     width: 23px;
     height: 23px;
     margin-bottom: 2px;
@@ -114,7 +114,7 @@ input[type=date] {
 input[type="date"]::-webkit-calendar-picker-indicator {
     background: url('/svgs/date.svg') no-repeat 50% 50%;
     background-size: 23px 23px;
-    backdrop-filter: var(--invert2);
+    backdrop-filter: var(--invert0);
     padding: 5px;
     border-radius: 50px;
     cursor: pointer;
@@ -134,23 +134,35 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     content: url('/svgs/sound-on.svg')
 }
 
-
-.send,
+.following,
 .username,
-.holdings {
+.send,
+.total_earned {
     display: inline-block;
     height: 32px;
     padding: 8px 16px;
-    margin: 8px;
+    margin-right: 4px;
+    line-height: 1;
     border-radius: 10px;
     border: 0;
     background: var(--second-contrast-15);
     color: var(--second-contrast)
 }
 
+.following img {
+    margin-top: -1px;
+}
+
+.following.yes {
+    background: var(--main-color);
+}
+
+.following.yes img {
+    filter: invert(1)
+}
+
 .send {
     height: 32px;
-    margin: 8px 0;
     padding: 4px 16px;
     vertical-align: top;
     background: var(--second-contrast-15);
@@ -173,10 +185,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     left: 0px
 }
 
-.holdings,
-.holdings:visited {
+.total_earned,
+.total_earned:visited {
     color: #db463e;
-    margin-left: 0;
     padding: 11px 16px 9px 16px;
     text-decoration: none;
     font-weight: bold;
@@ -184,7 +195,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     vertical-align: bottom;
 }
 
-.holdings:after {
+.total_earned:after {
     content: ' GRAT';
 }
 
@@ -284,7 +295,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     left: 0;
     position: absolute !important;
     background-image: url(/svgs/biip-logo.svg);
-    filter: var(--invert2)
+    filter: var(--invert0)
 }
 
 .connecting+.blip {

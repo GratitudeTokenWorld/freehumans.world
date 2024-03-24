@@ -3,7 +3,7 @@ import { Express } from 'express';
 import { createRateLimiter } from '../middleware/limiter';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { Api, JsonRpc, RpcError, JsSignatureProvider } from '@proton/js';
+import { Api, JsonRpc, RpcError, JsSignatureProvider, Key } from '@proton/js';
 import db from '../utils/scylladb';
 import { shamir } from '../utils/shamir'; // Shamir method
 
@@ -14,7 +14,8 @@ const defaultPrivateKey: string = "PVT_K1_2FA8Af2BzBXVq2wVzgKZRrRDywzEW2ZKk9t7TD
 const signatureProvider: JsSignatureProvider = new JsSignatureProvider([defaultPrivateKey]);
 
 // Setting up the Proton blockchain RPC and API with a given node endpoint and a signature provider.
-const rpc = new JsonRpc('https://testnet.protonchain.com');
+const endpoint = 'https://testnet.protonchain.com';
+const rpc = new JsonRpc(endpoint);
 const api = new Api({ rpc, signatureProvider });
 
 // Assuming newUser is the username for which the directory is being created
@@ -120,11 +121,34 @@ export const checkInviter = (app: Express) => {
 
 export const registerAccount = (app: Express) => {
     app.post('/register-account', createRateLimiter(10, 15), async (req, res) => {
-        const { email, username, invitedby } = req.body;
-        const newUser = username;
+        const { email, username, key, invitedby } = req.body;
+
+        // Dynamic assignment of newUser based on 'username' or 'key'
+        let newUser: string;
+        let finalKey: string | undefined;
+        // Generates a new key pair for the account, ensuring security.
+        let mnemonic: Mnemonic | null = new Mnemonic();
+        const { publicKey, privateKey } = mnemonic.keyPairAtIndex(0);
+
+        if (key) {
+            finalKey = key;
+            const privateKey = Key.PrivateKey.fromString(key);
+            const publicKey = privateKey.getPublicKey().toString();
+            const response = await fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+            const data = await response.json();
+            newUser = Object.keys(data.protontest.accounts)[0];
+        } else if (username) {
+            newUser = username;
+            finalKey = privateKey;
+        } else {
+            return res.status(400).send({ error: 'Either key or username must be provided.' });
+        } ///// IF KEY .... THIS IS WHERE YOU MUST CHECK TO WHICH USERNAME DOES THIS PRIVATEKEY BELONG TO AND GET THAT USERNAME
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         try {
             // Basic validations
-            if (!newUser || newUser.length > 12) {
+            if (!newUser || newUser.length > 12 || newUser.length < 4) {
                 return res.status(400).send({ error: "Username is required and must be less than 13 characters." });
             }
 
@@ -136,7 +160,10 @@ export const registerAccount = (app: Express) => {
             await saveUserData(email, newUser, invitedby);
 
             // Await the blockchain account creation and capture the result
-            const result = await createPaidBlockchainAccount(email, username, newUser);
+            const result = await createPaidBlockchainAccount(email, username, newUser, finalKey || '');
+
+            // After successful account creation, the mnemonic (and thus the private key) is cleared from memory.
+            mnemonic = null;
 
             // Respond with success and the blockchain creation result
             res.status(200).send({ message: 'Data saved successfully.', newUser, email, invitedby, result });
@@ -151,8 +178,9 @@ export const registerAccount = (app: Express) => {
         }
     });
 }
+
 // Function to create a new account on the Proton blockchain with paid resources (RAM, CPU, and NET).
-export const createPaidBlockchainAccount = async (email: string, user: string, newUser: string) => {
+export const createPaidBlockchainAccount = async (email: string, user: string, newUser: string, pvt_key: string) => {
 
     //Buys RAM for the new account to ensure sufficient resources for account creation.
     // try {
@@ -179,9 +207,7 @@ export const createPaidBlockchainAccount = async (email: string, user: string, n
 
     // create the account
     try {
-        // Generates a new key pair for the account, ensuring security.
-        let mnemonic: Mnemonic | null = new Mnemonic();
-        const { publicKey, privateKey } = mnemonic.keyPairAtIndex(0);
+
 
         // Proceeds to create the new account with the new public key and bought resources.
         // const result = await api.transact({
@@ -250,12 +276,13 @@ export const createPaidBlockchainAccount = async (email: string, user: string, n
         //     blocksBehind: 3,
         //     expireSeconds: 30,
         // });
-        console.log(privateKey);
+        console.log(pvt_key); // must be removed in production
         // shamir the privateKey 
-        shamir(email, user, privateKey).catch(console.error); //...now what ?
-
-        // After successful account creation, the mnemonic (and thus the private key) is cleared from memory.
-        mnemonic = null;
+        if (!pvt_key || pvt_key === '') {
+            return 'No private key passed to createPaidBlockchainAccount fn.';
+        } else {
+            shamir(email, user, pvt_key).catch(console.error)
+        }
 
         // Optionally, creates a directory for user-specific data.
         let userDirectory: string = '';
@@ -270,8 +297,8 @@ export const createPaidBlockchainAccount = async (email: string, user: string, n
 
         // Responds with the transaction result indicating successful account creation.
         //return result;
-        console.log(privateKey);
-        return 'gigi'
+        console.log(pvt_key);
+        return 'User saved in DB, Blockchain Account Created, Shares sent.'
     } catch (e) {
         //console.error('\nCaught exception: ', e);
         if (e instanceof RpcError) {
@@ -315,9 +342,6 @@ async function saveUserData(
         throw err;
     }
 }
-
-
-
 
 // LOGIN
 export const login = (app: Express) => {
@@ -369,10 +393,24 @@ export const login = (app: Express) => {
                 return res.status(400).send({ message: 'Session not found or does not match login attempt' });
             }
 
-            return res.send({ userName: userName });
+            return res.send({ userName: userName, userID: userId });
         } catch (error) {
             console.error('Error processing login', error);
             return res.status(500).send({ message: 'Error processing login' });
         }
     });
 };
+
+
+// TEST FUNCTION
+export const test = (app: Express) => {
+    app.get('/test', createRateLimiter(15, 15), async (req, res) => {
+        const privateKey = Key.PrivateKey.fromString(defaultPrivateKey);
+        const publicKey = privateKey.getPublicKey().toString();
+        const response = await fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+        const data = await response.json();
+        console.log(Object.keys(data.protontest.accounts)[0]);
+
+    });
+};
+

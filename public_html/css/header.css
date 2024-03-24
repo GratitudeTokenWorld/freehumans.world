@@ -1,11 +1,11 @@
 #main_header {
-    position: fixed;
+    position: sticky;
     height: 53px;
     top: 0;
     left: 0;
     right: 0;
     width: 100%;
-    max-width: 690px;
+    max-width: 670px;
     margin: 0 auto;
     padding-bottom: 23px;
     padding: 5px;

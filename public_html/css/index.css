@@ -20,10 +20,10 @@ h2 {
 .freeuser {
     background: black;
     mix-blend-mode: var(--free-user);
-    border-radius: 90vw;
+    border-radius: 100vw;
     cursor: url(/img/scissors.png), pointer;
-    width: 90vw;
-    height: 90vw;
+    width: 100vw;
+    height: 100vw;
     overflow: hidden;
     position: absolute;
     margin: 0 auto;
@@ -44,9 +44,21 @@ h2 {
     transition: 0.23s all;
     font-size: 16px;
     line-height: 1;
+    margin: 0 10px;
+    position: relative;
+    color: white
 }
 
-#first_action #createUser {
+.face_id_svg {
+    display: block;
+    margin: 0 auto;
+    width: 128px;
+    height: 128px;
+    margin-bottom: 23px;
+    filter: var(--invert1);
+}
+
+#first_action #register {
     background: var(--main-color)
 }
 
@@ -111,7 +123,8 @@ h2 {
 }
 
 #backForm {
-    background: var(--main-color)
+    background: var(--main-color);
+    color: white
 }
 
 #messages {
@@ -158,7 +171,7 @@ h2 {
 }
 
 #location {
-    margin-top: -35vh;
+    margin-top: -333px;
 }
 
 .systems_status {
@@ -179,7 +192,7 @@ h2 {
 .you a {
     font-weight: bold;
     color: var(--second-contrast);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 #connectShip {
@@ -246,6 +259,11 @@ h2 {
         max-width: 100%;
     }
 
+    .you td,
+    .you a {
+        font-size: 14px;
+    }
+
     .video_presentation {
         padding: 0;
     }
@@ -284,7 +302,7 @@ h2 {
     .freeuser {
         width: 444px;
         height: 444px;
-        top: 236px;
+        top: 210px;
     }
 
     .freeuser img {
