@@ -1,21 +1,13 @@
+import { $ } from '/js/selectors.js';
 export const url = 'http://' + location.hostname + ':5000/' //localhost
 //export const url = 'https://' + location.hostname + ':5000/' //production
 
-// if no session token is generated, get one
-if (!localStorage.getItem('session')) {
-    fetch(`${url}generate-token?purpose=session`).then(response => {
-        return response.json()
-    }).then(data => {
-        localStorage.setItem('session', data.token);
-    }).catch(error => {
-        console.log(error);
-    })
-}
-
-
+import { generateToken } from '/js/token.js';
 
 // Function to authenticate every action that is either a private user action or authorisation, a blockchain transaction or revealing private info
-export const authenticateUser = async (user, secret_share) => {
+export const authenticateUser = (user, secret_share) => {
+    generateToken(user, 'session');
+
     fetch(`${url}login`, {
         method: "POST",
         headers: {
@@ -28,13 +20,21 @@ export const authenticateUser = async (user, secret_share) => {
             purpose: 'session'
         })
     }).then(response => response.json()).then(data => {
-        if (data.userName === user) {
+
+        if (data.userName && data.userName === user) {
+            localStorage.setItem('share', secret_share);
             localStorage.setItem('authenticatedUserID', data.userID);
             localStorage.setItem('authenticatedUser', user);
-            return true
+            console.log(`Login successful: ${user} | ${data.userID} | ${localStorage.getItem('session')}`);
+            authentication.classList.add('hide');
+            $('.overlay').style.display = '';
+            window.location = `/${user}`;
         } else {
-            return false
+            console.log(data);
+            alert('User not authenticated. Please try again.');
+            loader.classList.remove('show');
         }
+
     }).catch(error => {
         console.log(error);
     })

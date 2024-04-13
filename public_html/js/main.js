@@ -10,6 +10,9 @@ $('#homepage') ? null : tooltips();
 draggableStuff();
 posting();
 
+import { isAuthenticated } from '/js/isauth.js';
+isAuthenticated();
+
 let sounds = defaultSounds('lucianape3', null, null)
 
 
@@ -180,3 +183,15 @@ mybutton.addEventListener('click', e => {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
 })
+
+
+
+
+// logout function
+logout.addEventListener('click', e => {
+    e.preventDefault();
+    localStorage.removeItem('session');
+    localStorage.removeItem('authenticatedUser');
+    localStorage.removeItem('authenticatedUserID');
+    window.location = '/'
+});

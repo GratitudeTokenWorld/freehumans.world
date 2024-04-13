@@ -9,6 +9,8 @@ import { confetti } from '/js/confetti.js';
 //sphereListener(window, 'load', sphere);
 
 import { url, authenticateUser } from '/js/login.js';
+import { isAuthenticated } from '/js/isauth.js';
+isAuthenticated();
 
 let FaceIDToken = localStorage.getItem('FaceIDToken') | null; // if it's null it means the FaceID token is missing.
 
@@ -27,31 +29,13 @@ showLogin.addEventListener('click', e => {
     user_authenticating.focus();
 })
 
-authentication.addEventListener('submit', e => {
+authentication.addEventListener('submit', async e => {
     e.preventDefault();
     const user = user_authenticating.value;
-
+    loader.classList.add('show');
     // LOGIN
-    try {
-        if (authenticateUser(user, secret_share.value)) { // if it returns true
-            authentication.classList.add('hide');
-            $('.overlay').style.display = '';
-            window.location = '/profile.html'
-        };
-    } catch (e) {
-        if (!(e instanceof Error)) {
-            e = new Error(e);
-        }
-        console.error(e.message);
-    }
+    authenticateUser(user, secret_share.value)
 })
-
-
-// logout function
-// logout.addEventListener('click', e => {
-//     e.preventDefault();
-//     localStorage.removeItem('authenticatedUser');
-// })
 
 
 const identity = () => {

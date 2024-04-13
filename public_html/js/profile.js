@@ -45,3 +45,28 @@ if (block) {
 if (username) {
     pop_it(username, null, null, ['/avatars/dyablohunter.webp'], '#000', ['Username copied to clipboard'], ['copy3'], 'lucianape3', true)
 }
+
+
+// GET USER PROFILE PAGE INFO?
+// create fetch POST request to get user profile info
+// const getProfileInfo = async () => {
+//     const authenticatedUser = localStorage.getItem('authenticatedUser');
+//     const authenticatedUserID = localStorage.getItem('authenticatedUserID');
+//     const session = localStorage.getItem('session');
+
+//     const response = await fetch('/profile', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${session}`
+//         },
+//         body: JSON.stringify({
+//             username: authenticatedUser,
+//             token: session,
+//             userid: authenticatedUserID
+//         })
+//     });
+//     return response.json();
+// };
+
+// console.log(getProfileInfo());

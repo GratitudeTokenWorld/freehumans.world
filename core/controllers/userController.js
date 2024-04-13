@@ -35,13 +35,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.test = exports.login = exports.createPaidBlockchainAccount = exports.registerAccount = exports.checkInviter = exports.checkUsernameAvailability = void 0;
+exports.checkUserFaults = exports.addUsers = exports.insertUsers = exports.isAuth = exports.test = exports.isAuthenticated = exports.login = exports.createPaidBlockchainAccount = exports.registerAccount = exports.checkInviter = exports.checkUsernameAvailability = void 0;
 const limiter_1 = require("../middleware/limiter");
 const path = __importStar(require("path"));
 const fs_1 = require("fs");
 const js_1 = require("@proton/js");
 const scylladb_1 = __importDefault(require("../utils/scylladb"));
 const shamir_1 = require("../utils/shamir"); // Shamir method
+const deshamir_1 = require("../utils/deshamir"); // DeShamir method
 // Proton Keys Generator
 const mnemonic_1 = require("@proton/mnemonic");
 const defaultPrivateKey = "PVT_K1_2FA8Af2BzBXVq2wVzgKZRrRDywzEW2ZKk9t7TDdyyqSLidgkTQ"; // 58 chars key, user test1515 on testnet // this should 
@@ -175,8 +176,7 @@ const registerAccount = (app) => {
         }
         else {
             return res.status(400).send({ error: 'Either key or username must be provided.' });
-        } ///// IF KEY .... THIS IS WHERE YOU MUST CHECK TO WHICH USERNAME DOES THIS PRIVATEKEY BELONG TO AND GET THAT USERNAME
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
         try {
             // Basic validations
             if (!newUser || newUser.length > 12 || newUser.length < 4) {
@@ -361,55 +361,138 @@ function saveUserData(email, username, invitedby) {
         }
     });
 }
-// LOGIN
-const login = (app) => {
-    app.post('/login', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const token = req.body.token;
-        const userName = req.body.user; // UserName provided by the client
-        const privateKeyShare = req.body.secret;
-        const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        const purpose = req.body.purpose;
+// Check session
+function checkSession(ipAddress, token, username, purpose) {
+    return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Step 1: Match PrivateKeyShare to get UserID
-            const userIDQuery = 'SELECT userid FROM pvt_app WHERE PrivateKeyShare = ?';
-            const userIDResult = yield scylladb_1.default.execute(userIDQuery, [privateKeyShare]);
-            if (userIDResult.rowLength === 0) {
-                return res.status(400).send({ message: 'Invalid secret share' });
-            }
-            const userId = userIDResult.rows[0]['userid'];
-            // Step 2: Verify UserName matches UserID in users table
-            const userNameQuery = 'SELECT UserName FROM users WHERE UserID = ?';
-            const userNameResult = yield scylladb_1.default.execute(userNameQuery, [userId]);
-            if (userNameResult.rowLength === 0 || userNameResult.rows[0]['username'] !== userName) {
-                return res.status(400).json({ message: 'UserName does not match secret share' });
-            }
-            // Step 3: Check session by IP address to retrieve all session info
-            const sessionQuery = 'SELECT token_string, purpose, username FROM session WHERE ip_address = ?';
-            const sessionResult = yield scylladb_1.default.execute(sessionQuery, [ip_address]);
+            // Step 1: Check session by IP address to retrieve all session info
+            const sessionQuery = 'SELECT token_string, purpose FROM session WHERE ip_address = ? AND username = ?';
+            const sessionResult = yield scylladb_1.default.execute(sessionQuery, [ipAddress, username], { prepare: true });
             let sessionFoundAndValid = false;
             // Check if there's a session that matches the token and purpose
             sessionResult.rows.forEach(row => {
                 if (row.token_string === token && row.purpose === purpose) {
                     sessionFoundAndValid = true;
-                    // Proceed to update the username only if it's a match
-                    if (row.username !== userName) {
-                        const updateSessionQuery = 'UPDATE session SET username = ? WHERE ip_address = ?';
-                        scylladb_1.default.execute(updateSessionQuery, [userName, ip_address]);
-                    }
                 }
             });
             if (!sessionFoundAndValid) {
-                return res.status(400).send({ message: 'Session not found or does not match login attempt' });
+                return { success: false, message: 'Session not found or does not match login attempt.' };
             }
-            return res.send({ userName: userName, userID: userId });
+            return true;
+        }
+        catch (error) {
+            console.error('Error checking session:', error);
+            return { success: false, message: 'Internal server error.' };
+        }
+    });
+}
+// LOGIN
+const login = (app) => {
+    app.post('/login', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const token = req.body.token;
+        const userName = req.body.user; // UserName provided by the client
+        const privateKeyShare = req.body.secret; // this can also come from the faceID server as the third share of the encrypted private key and will be available once the faceID server is running
+        const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+        const purpose = req.body.purpose;
+        try {
+            // Step 1: Check session by IP address to retrieve all session info
+            checkSession(ip_address, token, userName, purpose).then((result) => {
+                if (!result) {
+                    return res.status(400).send({ message: 'Invalid session.' });
+                }
+            });
+            // Step 2: Check if the username exists in the database and get userid at the same time
+            try {
+                // Step 2.1: Get UserID from users table by UserName
+                const userIDQuery = 'SELECT userid FROM users WHERE username = ?';
+                const userIDResult = yield scylladb_1.default.execute(userIDQuery, [userName]);
+                if (userIDResult.rows.length === 0) {
+                    return res.status(400).send({ message: 'Invalid username.' });
+                }
+                // if we got a username match we can get the userID
+                const userID = userIDResult.rows[0]['userid'];
+                try {
+                    // Step 2.2: check if the user is banned or in prison, some penalties may also apply here but it's not added yet
+                    const faultQuery = 'SELECT * FROM user_fault WHERE userid = ?';
+                    const result = yield scylladb_1.default.execute(faultQuery, [userID], { prepare: true });
+                    const users = result.rows;
+                    const faults = users.filter(user => user.ban || user.prison);
+                    if (faults.length > 0) {
+                        // Respond accordingly if there are faults
+                        res.status(400).send({ message: 'User has faults.', faults });
+                    }
+                }
+                catch (error) {
+                    console.error('Database query error:', error);
+                    res.status(500).send({ message: 'An error occurred while checking user faults.' });
+                }
+                // If we are here, there are no blocking user faults found, proceed
+                let combinedPrivateKey;
+                try {
+                    // Step 2.3: Get PrivateKeyShare from pvt_app table by UserID
+                    const privateKeyShareQuery = 'SELECT PrivateKeyShare FROM pvt_app WHERE userid = ?';
+                    const privateKeyShareResult = yield scylladb_1.default.execute(privateKeyShareQuery, [userID]);
+                    const dbPrivateKeyShare = privateKeyShareResult.rows[0]['privatekeyshare'];
+                    // Step 2.4: Combine the shares using the deshamir function
+                    combinedPrivateKey = yield (0, deshamir_1.deshamir)(privateKeyShare, dbPrivateKeyShare);
+                    if (!combinedPrivateKey) {
+                        return res.status(400).send({ message: 'Failed to combine private key shares.' });
+                    }
+                }
+                catch (error) {
+                    console.error('Error retrieving and combining private key shares:', error);
+                    return res.status(500).send({ message: 'Key Reconstruction failed.' });
+                }
+                // Step 2.5: Check if username is associated with the private key on the blockchain
+                const privateKey = js_1.Key.PrivateKey.fromString(combinedPrivateKey);
+                const publicKey = privateKey.getPublicKey().toString();
+                const response = yield fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+                const data = yield response.json();
+                const associatedUsername = Object.keys(data.protontest.accounts)[0];
+                combinedPrivateKey = null; // Clear the combined private key from memory | this is important
+                if (associatedUsername !== userName) {
+                    return res.status(400).json({ message: 'Credentials provided do not match.' });
+                }
+                // If everything checks out, update session and then return the username and userID
+                try {
+                    const updateSessionQuery = 'UPDATE session SET authenticated = true WHERE username = ?';
+                    yield scylladb_1.default.execute(updateSessionQuery, [userName], { prepare: true });
+                    console.log('Login successful for user:', userName);
+                    return res.send({ userName: userName, userID: userID });
+                }
+                catch (error) {
+                    console.error('Error updating session:', error);
+                    return res.status(500).send({ message: 'Failed to update session.' });
+                }
+            }
+            catch (error) {
+                console.error('Error checking username:', error);
+                return res.status(500).send({ message: 'Internal server error.' });
+            }
         }
         catch (error) {
             console.error('Error processing login', error);
-            return res.status(500).send({ message: 'Error processing login' });
+            return res.status(500).send({ message: 'Error processing login.' });
         }
     }));
 };
 exports.login = login;
+// function to query the DB and see if a user action is authenticated
+const isAuthenticated = (username, token, purpose) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const query = 'SELECT COUNT(*) FROM session WHERE username = ? AND token_string = ? AND purpose = ? AND date < dateOf(now()) - 30';
+        const params = [username, token, purpose];
+        const result = yield scylladb_1.default.execute(query, params, { prepare: true });
+        // If count is greater than 0, user is authenticated (true), otherwise false
+        return result.first()['count'] > 0;
+    }
+    catch (error) {
+        console.error('Error executing query:', error);
+        return false;
+    }
+});
+exports.isAuthenticated = isAuthenticated;
+// TESTING METHODS BELOW
 // TEST FUNCTION
 const test = (app) => {
     app.get('/test', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -421,3 +504,127 @@ const test = (app) => {
     }));
 };
 exports.test = test;
+// IS AUTHENTICATED? METHOD
+const isAuth = (app) => __awaiter(void 0, void 0, void 0, function* () {
+    app.post('/isauth', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { username, token, purpose } = req.body;
+        try {
+            // Calculate expiration limit (30 days ago)
+            const currentDate = new Date();
+            const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+            // Query session to check if token is valid
+            const query = 'SELECT token_string, date FROM session WHERE username = ? AND token_string = ? AND purpose = ? ALLOW FILTERING';
+            const params = [username, token, purpose];
+            const result = yield scylladb_1.default.execute(query, params, { prepare: true });
+            // Check if session exists and token is still valid
+            if (result.rowLength > 0) {
+                const session = result.rows[0];
+                const sessionDate = new Date(session.date);
+                if (sessionDate > expirationLimit) {
+                    // Session's token is still valid
+                    return res.json({ authenticated: true, message: 'All credentials are valid.' });
+                }
+            }
+            // Session does not exist or token has expired
+            res.status(401).json({ authenticated: false, message: 'Invalid or expired session credentials.' });
+        }
+        catch (error) {
+            console.error('Error checking authentication:', error);
+            res.status(500).json({ authenticated: false, message: 'Error checking authentication.' });
+        }
+    }));
+});
+exports.isAuth = isAuth;
+// SELECT COUNT(*) FROM session WHERE username = ? AND date < dateOf(now()) - 30 days;
+// UPDATE session SET date = '2024-01-01 21:14:48.787+0000' WHERE username = 'test1515';
+// INSERT SECRET SHARE FOR A USER
+// INSERT INTO pvt_app(UserID, CreationDate, PrivateKeyShare) VALUES(c4471371-b6af-4392-9746-5261271ec442, '2024-03-01 21:14:48.787+0000', 'wPOlBbmUk3Eax13pbVMgji+l6hulE5Lq4d753BdrK2R0PCx0Gjusd56b+r/a8Ema0V6xzGtt4Ildew==');
+// 10 exotic animal usernames
+const usernames = [
+    'axolotl',
+    'okapi',
+    'quokka',
+    'fossa',
+    'narwhal',
+    'ayeaye',
+    'platypus',
+    'sundacolugo',
+    'blobfish',
+    'mantisshrimp'
+];
+const fullNames = usernames.map(username => `${username.charAt(0).toUpperCase() + username.slice(1)} Smith`);
+const languages = ['EN', 'FR', 'ES', 'DE', 'IT', 'PT', 'RU', 'ZH', 'JA', 'KO'];
+// create emails array
+const emails = usernames.map(username => `${username}@freehumans.world`);
+// create a scylladb query to add these users to the users table
+const insertUsersQuery = `
+INSERT INTO users (userid, email, username, invitedby, registrationdate, lang, fullname)
+VALUES (uuid(), ?, ?, ?, toTimeStamp(now()), ?, ?);
+`;
+// insert the users into the database
+const insertUsers = (emails, usernames, fullNames) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        for (let i = 0; i < usernames.length; i++) {
+            const email = emails[i];
+            const username = usernames[i];
+            const fullName = fullNames[i];
+            const language = languages[Math.floor(Math.random() * languages.length)]; // Select a random language from the array
+            yield scylladb_1.default.execute(insertUsersQuery, [email, username, 'grat', language, fullName], { prepare: true });
+        }
+        console.log('Users inserted successfully.');
+    }
+    catch (err) {
+        console.error('Failed to insert users:', err);
+    }
+});
+exports.insertUsers = insertUsers;
+//insertUsers(emails, usernames, fullNames).catch(console.error);
+// CREATE A POST METHOD TO ADD USERNAMES FROM POSTMAN
+//addUsers to 'add-users' endpoint
+const addUsers = (app) => {
+    app.post('/add-users', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        (0, exports.insertUsers)(emails, req.body.usernames, fullNames).catch(console.error);
+        console.log(usernames);
+        res.send({ message: 'Users added successfully.' });
+    }));
+};
+exports.addUsers = addUsers;
+// CHECK USER FAULTS IN user_fault table
+const checkUserFaults = (app) => {
+    app.post('/checkfault', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = req.body.username;
+        const userid = req.body.userid;
+        const sessionToken = req.body.token;
+        //console.log(user, userid, sessionToken);
+        const query = 'SELECT * FROM user_fault WHERE userid = ?';
+        // table columns: userid | ban | penalty | prison
+        try {
+            const result = yield scylladb_1.default.execute(query, [userid], { prepare: true });
+            const users = result.rows;
+            const faults = users.filter(user => user.ban || user.penalty || user.prison);
+            res.send({ faults });
+        }
+        catch (error) {
+            console.error('Database query error:', error);
+            res.status(500).send({ message: 'An error occurred while checking user faults.' });
+        }
+    }));
+    // test function to add faults to the user_fault table
+    app.post('/add-fault', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { userid, ban, penalty, prison } = req.body;
+        const query = 'INSERT INTO user_fault (userid, ban, penalty, prison) VALUES (?, ?, ?, ?)';
+        try {
+            yield scylladb_1.default.execute(query, [userid, ban, penalty, prison], { prepare: true });
+            res.send({ message: 'Faults added successfully.' });
+        }
+        catch (error) {
+            console.error('Database query error:', error);
+            res.status(500).send({ message: 'An error occurred while adding user faults.' });
+        }
+    }));
+};
+exports.checkUserFaults = checkUserFaults;
+// UPDATE UI TO SHOW CORRECT USERNAME AND NAME ON PROFILE PAGE
+// DONE
+// CONNECT FUNCTIONALITY (update in the database and display status on the UI)
+// FOLLOW FUNCTIONALITY (update in the database and display status on the UI)

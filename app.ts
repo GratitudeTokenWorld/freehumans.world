@@ -1,9 +1,11 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
-import { generateToken } from './core/utils/token';
-import { checkUsernameAvailability, registerAccount, checkInviter, login, test } from './core/controllers/userController';
+import { generateSessionToken } from './core/utils/token';
+import { checkUsernameAvailability, registerAccount, checkInviter, login, addUsers, checkUserFaults, isAuth, test } from './core/controllers/userController';
+import { getUserProfile } from './core/controllers/userProfile';
 import { location, sendCode, verifyCode, checkEmail } from './core/controllers/emailController';
 import { transfer } from './core/controllers/transfer';
 import cors from 'cors';
+
 
 // Create Express app for serving static files on port 80
 const staticApp: Express = express();
@@ -38,8 +40,12 @@ app.use(express.json()); // Parse JSON bodies
 app.use(allowFromHostname); // Custom middleware for hostname validation
 
 // Routes
-generateToken(app);
+getUserProfile(staticApp)
+checkUserFaults(app);
+addUsers(app);
+generateSessionToken(app);
 login(app);
+isAuth(app);
 test(app);
 location(app);
 sendCode(app);

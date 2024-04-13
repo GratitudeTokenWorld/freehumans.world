@@ -294,7 +294,7 @@ loginButtons.forEach(el => {
     el.addEventListener("click", () => login(false))
 })
 
-logoutButton ? logoutButton.addEventListener("click", () => logout()) : null;
+//logoutButton ? logoutButton.addEventListener("click", () => logout()) : null;
 // Restore
 login(true)
 

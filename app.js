@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const token_1 = require("./core/utils/token");
 const userController_1 = require("./core/controllers/userController");
+const userProfile_1 = require("./core/controllers/userProfile");
 const emailController_1 = require("./core/controllers/emailController");
 const transfer_1 = require("./core/controllers/transfer");
 const cors_1 = __importDefault(require("cors"));
@@ -36,8 +37,12 @@ app.use((0, cors_1.default)()); // Enable CORS
 app.use(express_1.default.json()); // Parse JSON bodies
 app.use(allowFromHostname); // Custom middleware for hostname validation
 // Routes
-(0, token_1.generateToken)(app);
+(0, userProfile_1.getUserProfile)(staticApp);
+(0, userController_1.checkUserFaults)(app);
+(0, userController_1.addUsers)(app);
+(0, token_1.generateSessionToken)(app);
 (0, userController_1.login)(app);
+(0, userController_1.isAuth)(app);
 (0, userController_1.test)(app);
 (0, emailController_1.location)(app);
 (0, emailController_1.sendCode)(app);

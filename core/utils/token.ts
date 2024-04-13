@@ -16,18 +16,23 @@ function generateRandomToken(): string {
     return randomBytes(8).toString('hex'); // Generates a unique token of 16 characters
 }
 
-export const generateToken = (app: Express) => {
-    app.get('/generate-token', createRateLimiter(15, 15), async (req, res) => {
+export const generateSessionToken = (app: Express) => {
+    app.get('/session-token', createRateLimiter(15, 15), async (req, res) => {
 
         const purpose = req.query.purpose as string;
+        const username = req.query.username as string;
         const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
+        if (!username) {
+            return res.status(400).send('Missing username.');
+        }
+
         if (!purpose) {
-            return res.status(400).send('Missing purpose');
+            return res.status(400).send('Missing purpose.');
         }
 
         const currentDate = new Date();
-        const expirationLimit = new Date(currentDate.getTime() - 15 * 60000); // 15 minutes ago
+        const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
 
         try {
             const queryFindSession = 'SELECT token_string, date FROM session WHERE ip_address = ?';
@@ -45,8 +50,8 @@ export const generateToken = (app: Express) => {
 
             // Generate a new token and update or insert the session
             const newToken = generateRandomToken();
-            const queryUpsertSession = 'INSERT INTO session (ip_address, token_string, purpose, date) VALUES (?, ?, ?, ?)';
-            await db.execute(queryUpsertSession, [ip_address, newToken, purpose, currentDate]);
+            const queryUpsertSession = 'INSERT INTO session (ip_address, token_string, purpose, date, username) VALUES (?, ?, ?, ?, ?)';
+            await db.execute(queryUpsertSession, [ip_address, newToken, purpose, currentDate, username]);
 
             res.json({ token: newToken, message: 'New token generated.' });
         } catch (error) {
