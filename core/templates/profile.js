@@ -2,6 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateProfileTemplate = void 0;
 const generateProfileTemplate = (username, userData) => {
+    const lvl = userData.level || 1;
+    const xpArray = [
+        2030, 2233, 2456, 2702, 2972,
+        3269, 3596, 3956, 4351, 4787,
+        5265, 5792, 6371, 7008, 7709,
+        8480, 9328, 10261, 11287, 12415,
+        13657, 15023, 16525, 18177, 19995,
+        21994, 24194, 26613, 29275, 32202,
+        35422, 38965, 42861, 47147, 51862,
+        57048, 62753, 69028, 75931, 83524,
+        91876, 101064, 111170, 122287, 134516,
+        147968, 162764, 179041, 196945, 216639,
+        238303, 262134, 288347, 317182, 348900,
+        383790, 422169, 464386, 510825, 561907,
+        618098, 679908, 747898, 822688, 904957,
+        995453, 1094998, 1204498
+    ]; // starts with lvl 2
+    // Reset XP after each lvl and pass on extra xp instead of 0 ? or keep adding to XP? ... make tables for abilities and bonuses like from NFTs for example 50% boost xp gain from different sources, consumable / mats nfts... with XP boosts..
+    // check xp after each action and depending on level, calculate if the user will have equal to or more than required XP to get to next level, add 1 to level, reset XP to 0, report any leftover XP if the action exceeds current levelup requirement.
     const template = `
 <!DOCTYPE html>
 <html lang="en" id="profilepage">
@@ -136,7 +155,7 @@ const generateProfileTemplate = (username, userData) => {
             <header class="flex-center justify-start">
                 <span class="small_avatar" href="/${username}"><img src="/avatars/lucianape3.webp" /></span>
                 <div class="name_bio">
-                    <h3>${userData[0].fullname + ' @' + username}</h3>
+                    <h3>${userData.fullname + ' @' + username}</h3>
                     <!-- Add online and away status small circles with simple color -->
                     <span class="bio">Creator of Worlds</span>
                 </div>
@@ -173,7 +192,7 @@ const generateProfileTemplate = (username, userData) => {
             <div class="main-header flex justify-between">
                 <div class="balances">
                     <a href="/" class="logo"><img title="Home" class="L_icon inline-block invert2"
-                            src="/svgs/FHW.svg" /></a>
+                            src="/svgs/symbol.svg" /></a>
                     <span class="like2give-balance" title="Like2Give balance">23,000</span>
                     <span class="share2earn-balance" title="Share2Earn balance">2,300</span>
                 </div>
@@ -254,9 +273,9 @@ const generateProfileTemplate = (username, userData) => {
                             </bag_menu>
                             <bags_space class="grid5">
                                 <nft id="nft-123" class="equipped legendary_inner_glow"><img draggable="true"
-                                        src="/img/markets/avatars64.jpg" title="Cyberpunk Avatar NFT (In use)" /></nft>
+                                        src="/img/markets/avatars64.jpg" title="Cyberpunk Avatar (In use)" /></nft>
                                 <nft id="nft-124" class="unequipped"><img draggable="true"
-                                        src="/img/markets/animations64.gif" title="Animation NFT (Not in use)" />
+                                        src="/img/markets/animations64.gif" title="Animation Name (Not in use)" />
                                 </nft>
                                 <nft id="nft-125" title="NFT slot"></nft>
                                 <nft id="nft-126" title="NFT slot"></nft>
@@ -302,7 +321,7 @@ const generateProfileTemplate = (username, userData) => {
     </header>
 
     <main class="maxw-690">
-        <xp title="Well Rested: 200% XP Earn Rate">230,000 XP<p></p>
+        <xp title="Well Rested: 200% XP Earn Rate">${userData.xp || 0} / ${xpArray[lvl - 1]} XP<p style="left: -${100 - (userData.xp / xpArray[lvl - 1] * 100)}%"></p>
         </xp>
         <div id="cover"
             style="background: url(/nft/cover/cyber-user-world-1.jpg) no-repeat 50% 50%; background-size: cover">
@@ -337,20 +356,18 @@ const generateProfileTemplate = (username, userData) => {
             loads the correct animation or effect from the server. Can also contain sound effects. -->
         </div>
         <div class="distribution-stats grid2 gap10">
-            <span class="l2g" title="Earned through likes"><img class="S_icon" src="/svgs/like.svg" /> 6,900</span>
-            <span class="s2e" title="Earned through sharing"><img class="S_icon" src="/svgs/share.svg" /> 15,000</span>
+            <span class="l2g" title="Unlocked"><img class="S_icon" src="/svgs/like.svg" /> 800 GRAT</span>
+            <span class="s2e" title="Unlocked"><img class="S_icon" src="/svgs/share.svg" /> 200 GRAT</span>
         </div>
-        <h1 class="user_name" title="Full Name"><span>${userData[0].fullname}</span></h1>
-        <profile_title title="Title">Creator of butterflies</profile_title>
-        <level class="levelrange1" title="Click to inspect">Level ${userData[0].level || 1} <img src="/svgs/eye.svg" /></level><br>
-        <!-- We have 6 ranges here, make sure to update the colors depending on the level of each user -->
-        <button class="following" title="Following?"><img class="M_icon invert1" src="/svgs/bell.svg" /></button><button
+        <h1 class="user_name" title="Full Name"><span>${userData.fullname}</span></h1>
+        <profile_title title="Title">${userData.title}</profile_title>
+        <level class="levelrange${lvl < 20 ? 1 : lvl < 30 ? 2 : lvl < 40 ? 3 : lvl < 50 ? 4 : lvl < 60 ? 5 : lvl < 70 ? 6 : 1}" title="Click to inspect">Level ${lvl} <img src="/svgs/eye.svg" /></level><br>
+        <button class="following ${userData.isUserConnected ? 'yes' : ''}" title="Following?"><img class="M_icon invert1" src="/svgs/bell.svg" /></button><button
             class="username" title="Copy URL">@${username}</button><button class="send" title="Send GRAT"><img class="S_icon"
                 src="/svgs/gratitude-token-logo.svg" /><img class="M_icon invert1"
-                src="/svgs/arrow-right.svg" /></button><a class="total_earned mr0" title="Total Earned"
-            href="https://explorer.xprnetwork.org/account/lucianape3" target="_blank">21,900</a>
-        <p class="living" title="Living la vida loca in?"><img class="M_icon invert2" src="/svgs/globe.svg" /> Bucharest
-        </p>
+                src="/svgs/arrow-right.svg" /></button><a class="blockchain_balance mr0" title="Blockchain Balance"
+            href="https://testnet.explorer.xprnetwork.org/account/${username}" target="_blank">${parseInt(userData.balance).toFixed(2)}</a>
+        <p class="living" title="Living la vida loca in?"><img class="M_icon invert2" src="/svgs/globe.svg" /> ${userData.city}</p>
         <div class="flex-center">
             <label class="switch rel" title="Light / Dark">
                 <input id="themeSwitch" type="checkbox">

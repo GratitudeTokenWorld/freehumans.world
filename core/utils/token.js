@@ -16,20 +16,16 @@ exports.generateSessionToken = void 0;
 const limiter_1 = require("../middleware/limiter");
 const crypto_1 = require("crypto");
 const scylladb_1 = __importDefault(require("../utils/scylladb"));
-// Session Token expiration times in minutes
-const token_expiration = {
-    reg: 15,
-    temp: 1440,
-    long: 43200
-};
 // Generate a random token
-function generateRandomToken() {
-    return (0, crypto_1.randomBytes)(8).toString('hex'); // Generates a unique token of 16 characters
+function generateToken() {
+    // AES-256 requires a 256-bit key (32 bytes)
+    const key = (0, crypto_1.randomBytes)(32);
+    return key.toString('hex'); // Convert key to hexadecimal string
 }
 const generateSessionToken = (app) => {
-    app.get('/session-token', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const purpose = req.query.purpose;
-        const username = req.query.username;
+    app.post('/session-token', (0, limiter_1.createRateLimiter)(15, 15), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const purpose = req.body.purpose; // Purpose is received but not used in the query
+        const username = req.body.username;
         const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
         if (!username) {
             return res.status(400).send('Missing username.');
@@ -40,20 +36,21 @@ const generateSessionToken = (app) => {
         const currentDate = new Date();
         const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
         try {
-            const queryFindSession = 'SELECT token_string, date FROM session WHERE ip_address = ?';
-            const existingSessionResult = yield scylladb_1.default.execute(queryFindSession, [ip_address]);
+            // Corrected query to include all necessary primary key components
+            const queryFindSession = 'SELECT token_string, date FROM session WHERE username = ? AND ip_address = ? ALLOW FILTERING';
+            const existingSessionResult = yield scylladb_1.default.execute(queryFindSession, [username, ip_address]);
             if (existingSessionResult.rowLength > 0) {
                 const session = existingSessionResult.rows[0];
                 const sessionDate = new Date(session.date);
                 if (sessionDate > expirationLimit) {
                     // Session's token is still valid
-                    return res.json({ token: session.token_string, message: 'Existing token is still valid.' });
+                    return res.json({ message: 'Existing token is still valid.' });
                 }
             }
-            // Generate a new token and update or insert the session
-            const newToken = generateRandomToken();
-            const queryUpsertSession = 'INSERT INTO session (ip_address, token_string, purpose, date, username) VALUES (?, ?, ?, ?, ?)';
-            yield scylladb_1.default.execute(queryUpsertSession, [ip_address, newToken, purpose, currentDate, username]);
+            // Generate a new token and insert it into the session
+            const newToken = generateToken(); // Ensure generateToken is correctly defined elsewhere
+            const queryUpsertSession = 'INSERT INTO session (username, ip_address, token_string, date) VALUES (?, ?, ?, ?)';
+            yield scylladb_1.default.execute(queryUpsertSession, [username, ip_address, newToken, currentDate]);
             res.json({ token: newToken, message: 'New token generated.' });
         }
         catch (error) {

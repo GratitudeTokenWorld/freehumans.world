@@ -9,8 +9,8 @@ import { confetti } from '/js/confetti.js';
 //sphereListener(window, 'load', sphere);
 
 import { url, authenticateUser } from '/js/login.js';
-import { isAuthenticated } from '/js/isauth.js';
-isAuthenticated();
+import { credentials } from '/js/credentials.js';
+credentials();
 
 let FaceIDToken = localStorage.getItem('FaceIDToken') | null; // if it's null it means the FaceID token is missing.
 
@@ -33,8 +33,10 @@ authentication.addEventListener('submit', async e => {
     e.preventDefault();
     const user = user_authenticating.value;
     loader.classList.add('show');
+
     // LOGIN
-    authenticateUser(user, secret_share.value)
+    authenticateUser(user, secret_share.value);
+
 })
 
 

@@ -29,7 +29,7 @@ xp p {
     background: var(--blue-balance);
     position: absolute;
     top: 0;
-    left: -77%;
+    left: 0;
     z-index: 1;
     mix-blend-mode: hard-light;
 }
@@ -137,7 +137,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .following,
 .username,
 .send,
-.total_earned {
+.blockchain_balance {
     display: inline-block;
     height: 32px;
     padding: 8px 16px;
@@ -185,8 +185,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     left: 0px
 }
 
-.total_earned,
-.total_earned:visited {
+.blockchain_balance,
+.blockchain_balance:visited {
     color: #db463e;
     padding: 11px 16px 9px 16px;
     text-decoration: none;
@@ -195,7 +195,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     vertical-align: bottom;
 }
 
-.total_earned:after {
+.blockchain_balance:after {
     content: ' GRAT';
 }
 

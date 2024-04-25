@@ -7,11 +7,12 @@ import { Api, JsonRpc, RpcError, JsSignatureProvider, Key } from '@proton/js';
 import db from '../utils/scylladb';
 import { shamir } from '../utils/shamir'; // Shamir method
 import { deshamir } from '../utils/deshamir'; // DeShamir method
+import { decryptString } from '../utils/user_share_decrypt';
 
 // Proton Keys Generator
 import { Mnemonic } from '@proton/mnemonic';
 
-const defaultPrivateKey: string = "PVT_K1_2FA8Af2BzBXVq2wVzgKZRrRDywzEW2ZKk9t7TDdyyqSLidgkTQ"; // 58 chars key, user test1515 on testnet // this should 
+const defaultPrivateKey: string = ""; // 58 chars key, user test1515 on testnet // this should 
 const signatureProvider: JsSignatureProvider = new JsSignatureProvider([defaultPrivateKey]);
 
 // Setting up the Proton blockchain RPC and API with a given node endpoint and a signature provider.
@@ -64,6 +65,29 @@ export const checkUsernameAvailability = (app: Express) => {
         }
     });
 }
+
+export const getTokens = (app: Express) => {
+    app.get('/getTokens', createRateLimiter(100, 15), async (req, res) => {
+        const username: string = String(req.query.username || '');
+
+        try {
+            const gigi = await rpc.get_currency_balance('grat', username, 'GRAT');
+            // Attempts to fetch account information from the blockchain.
+            res.send({ grat: parseInt(gigi[0]).toFixed(2) });
+        } catch (e) {
+            //console.error('\nCaught exception: ', e);
+            if (e instanceof RpcError) {
+                e.json.code === 500 ? res.send({ 'message': e.details[0].message }) : null;
+            } else {
+                // Handles non-RPC errors, indicating an unknown or unexpected error occurred.
+                res.status(500).send({ message: "An unknown error occurred." });
+            }
+        }
+    });
+}
+
+
+
 // export const PVTCheck = (app: Express) => {
 //     // Defines a GET endpoint to check username availability.
 //     // Apply the rate limiting middleware specifically to this route.
@@ -344,117 +368,191 @@ async function saveUserData(
     }
 }
 
-// Check session
-async function checkSession(ipAddress: string, token: string, username: string, purpose: string) {
+
+
+// Get session token without IP
+async function getSessionToken(username: string) {
     try {
-        // Step 1: Check session by IP address to retrieve all session info
-        const sessionQuery = 'SELECT token_string, purpose FROM session WHERE ip_address = ? AND username = ?';
+        // Step 1: Get session by IP address to retrieve all session info
+        const sessionQuery = 'SELECT token_string FROM session WHERE username = ?';
+        const sessionResult = await db.execute(sessionQuery, [username], { prepare: true });
+
+        let sessionFoundAndValid = false;
+
+        let token;
+
+        // Check if there's a session that matches the token
+        sessionResult.rows.forEach(row => {
+            sessionFoundAndValid = true;
+            token = row.token_string;
+        });
+
+        if (!sessionFoundAndValid) {
+            return { token: undefined, message: 'Token not found.' };
+        }
+
+        return { token: token }
+
+    } catch (error) {
+        console.error('Error checking session:', error);
+        return { token: undefined, message: 'Internal server error.' };
+    }
+}
+
+
+
+// Get session token by IP
+async function getSessionTokenByIP(ipAddress: string, username: string) {
+    try {
+        // Step 1: Get session by IP address to retrieve all session info
+        const sessionQuery = 'SELECT token_string FROM session WHERE ip_address = ? AND username = ?';
         const sessionResult = await db.execute(sessionQuery, [ipAddress, username], { prepare: true });
 
         let sessionFoundAndValid = false;
 
-        // Check if there's a session that matches the token and purpose
+        let token;
+
+        // Check if there's a session that matches the token
         sessionResult.rows.forEach(row => {
-            if (row.token_string === token && row.purpose === purpose) {
-                sessionFoundAndValid = true;
-            }
+            sessionFoundAndValid = true;
+            token = row.token_string;
         });
 
         if (!sessionFoundAndValid) {
-            return { success: false, message: 'Session not found or does not match login attempt.' };
+            return { token: undefined, message: 'Session not found or does not match login attempt.' };
         }
 
-        return true
+        return { token: token }
 
     } catch (error) {
         console.error('Error checking session:', error);
-        return { success: false, message: 'Internal server error.' };
+        return { token: undefined, message: 'Internal server error.' };
     }
 }
+
+
+const getUserID = async (username: string) => {
+    const userIDQuery = 'SELECT userid FROM users WHERE username = ?';
+
+    try {
+        const userIDResult = await db.execute(userIDQuery, [username]);
+        if (userIDResult.rows.length === 0) {
+            return { error: `No user found with username: ${username}` };
+        }
+        return { userID: userIDResult.rows[0]['userid'] };
+    } catch (err) {
+        console.error('Error processing login:', err);
+        return { error: 'Error retrieving user ID. Please try again.' };
+    }
+}
+
+
+
+const reconstructionCheck = async (userID: string, secret: string, sessionToken: string | undefined) => {
+    if (!secret) {
+        console.error('Missing user secret');
+        return undefined;
+    }
+
+    if (!sessionToken) {
+        console.error('Missing session token, defaulting to empty string');
+        sessionToken = '';
+    }
+
+    // Get PrivateKeyShare from pvt_app table by UserID
+    let combinedPrivateKey: string | null;
+    const dbKeyShareQuery = 'SELECT PrivateKeyShare FROM pvt_app WHERE userid = ?';
+    const dbKeyShareResult = await db.execute(dbKeyShareQuery, [userID]);
+    const dbPrivateKeyShare = dbKeyShareResult.rows[0]['privatekeyshare'];
+
+    // Decrypt user secret share
+    let userShare: string | null
+
+    userShare = decryptString(secret, sessionToken);
+
+    // Combine the shares using the deshamir function
+    combinedPrivateKey = await deshamir(userShare, dbPrivateKeyShare);
+    userShare = null;
+
+    if (!combinedPrivateKey) {
+        return undefined;
+    }
+
+    // Check if username is associated with the private key on the blockchain
+    const privateKey = Key.PrivateKey.fromString(combinedPrivateKey);
+    combinedPrivateKey = null;
+    const publicKey = privateKey.getPublicKey().toString();
+    const response = await fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+    const data = await response.json();
+    const associatedUsername = Object.keys(data.protontest.accounts)[0];
+
+    return associatedUsername
+}
+
+export const removeSession = (app: Express) => {
+    app.delete('/remove-session', createRateLimiter(15, 15), async (req, res) => {
+        const username = req.query.username as string;  // Retrieved from query parameters
+        const ip_address = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+
+        // Check if the required parameters are provided
+        if (!username || !ip_address) {
+            console.error('Missing username or IP address');
+            return res.status(400).send({ error: 'Missing username or IP address.' });
+        }
+
+        const deleteSessionQuery = 'DELETE FROM session WHERE username = ? AND ip_address = ?';
+        try {
+            await db.execute(deleteSessionQuery, [username, ip_address]);
+            console.log('Session entry deleted for user:', username);
+            res.status(200).send({ message: 'Session successfully deleted.' });
+        } catch (error) {
+            console.error('Failed to delete session entry:', error);
+            res.status(500).send({ error: 'Failed to delete session entry.' });
+        }
+    });
+};
+
 
 
 // LOGIN
 export const login = (app: Express) => {
     app.post('/login', createRateLimiter(15, 15), async (req, res) => {
-
-        const token = req.body.token as string;
-        const userName = req.body.user as string; // UserName provided by the client
-        const privateKeyShare = req.body.secret as string; // this can also come from the faceID server as the third share of the encrypted private key and will be available once the faceID server is running
+        const userName = req.body.user as string;
+        const secret = req.body.secret as string;
         const ip_address = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
-        const purpose = req.body.purpose as string;
 
         try {
-            // Step 1: Check session by IP address to retrieve all session info
-            checkSession(ip_address, token, userName, purpose).then((result) => {
-                if (!result) {
-                    return res.status(400).send({ message: 'Invalid session.' });
-                }
-            });
+            const userResult = await getUserID(userName);
+            if (userResult.error) {
+                return res.status(400).send({ message: userResult.error });
+            }
 
-            // Step 2: Check if the username exists in the database and get userid at the same time
+            const userID = userResult.userID;
+            const sessionToken = await getSessionTokenByIP(ip_address, userName);
+
+            if (!sessionToken.token) {
+                return res.status(400).send({ message: 'Invalid session.' });
+            }
+
             try {
-                // Step 2.1: Get UserID from users table by UserName
-                const userIDQuery = 'SELECT userid FROM users WHERE username = ?';
-                const userIDResult = await db.execute(userIDQuery, [userName]);
-                if (userIDResult.rows.length === 0) {
-                    return res.status(400).send({ message: 'Invalid username.' });
-                }
-                // if we got a username match we can get the userID
-                const userID = userIDResult.rows[0]['userid'];
+                const faultQuery = 'SELECT * FROM user_fault WHERE userid = ?';
+                const result = await db.execute(faultQuery, [userID], { prepare: true });
+                const users = result.rows;
+                const faults = users.filter(user => user.ban || user.prison);
 
-
-                try {
-                    // Step 2.2: check if the user is banned or in prison, some penalties may also apply here but it's not added yet
-                    const faultQuery = 'SELECT * FROM user_fault WHERE userid = ?';
-                    const result = await db.execute(faultQuery, [userID], { prepare: true });
-                    const users = result.rows;
-                    const faults = users.filter(user => user.ban || user.prison);
-
-                    if (faults.length > 0) {
-                        // Respond accordingly if there are faults
-                        res.status(400).send({ message: 'User has faults.', faults });
-                    }
-                } catch (error) {
-                    console.error('Database query error:', error);
-                    res.status(500).send({ message: 'An error occurred while checking user faults.' });
+                if (faults.length > 0) {
+                    return res.status(400).send({ faults: faults[0] });
                 }
 
-                // If we are here, there are no blocking user faults found, proceed
-                let combinedPrivateKey: string | null;
-                try {
-                    // Step 2.3: Get PrivateKeyShare from pvt_app table by UserID
-                    const privateKeyShareQuery = 'SELECT PrivateKeyShare FROM pvt_app WHERE userid = ?';
-                    const privateKeyShareResult = await db.execute(privateKeyShareQuery, [userID]);
-                    const dbPrivateKeyShare = privateKeyShareResult.rows[0]['privatekeyshare'];
-
-                    // Step 2.4: Combine the shares using the deshamir function
-                    combinedPrivateKey = await deshamir(privateKeyShare, dbPrivateKeyShare);
-
-                    if (!combinedPrivateKey) {
-                        return res.status(400).send({ message: 'Failed to combine private key shares.' });
-                    }
-                } catch (error) {
-                    console.error('Error retrieving and combining private key shares:', error);
-                    return res.status(500).send({ message: 'Key Reconstruction failed.' });
-                }
-
-                // Step 2.5: Check if username is associated with the private key on the blockchain
-                const privateKey = Key.PrivateKey.fromString(combinedPrivateKey);
-                const publicKey = privateKey.getPublicKey().toString();
-                const response = await fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
-                const data = await response.json();
-                const associatedUsername = Object.keys(data.protontest.accounts)[0];
-
-                combinedPrivateKey = null; // Clear the combined private key from memory | this is important
+                const associatedUsername = await reconstructionCheck(userID, secret, sessionToken.token);
 
                 if (associatedUsername !== userName) {
                     return res.status(400).json({ message: 'Credentials provided do not match.' });
                 }
 
-                // If everything checks out, update session and then return the username and userID
                 try {
-                    const updateSessionQuery = 'UPDATE session SET authenticated = true WHERE username = ?';
-                    await db.execute(updateSessionQuery, [userName], { prepare: true });
+                    const updateSessionQuery = 'UPDATE session SET authenticated = true WHERE username = ? AND ip_address = ? AND token_string = ?';
+                    await db.execute(updateSessionQuery, [userName, ip_address, sessionToken.token], { prepare: true });
                     console.log('Login successful for user:', userName);
                     return res.send({ userName: userName, userID: userID });
                 } catch (error) {
@@ -474,22 +572,135 @@ export const login = (app: Express) => {
 };
 
 
-// function to query the DB and see if a user action is authenticated
-export const isAuthenticated = async (username: string, token: string, purpose: string): Promise<boolean> => {
-    try {
-        const query = 'SELECT COUNT(*) FROM session WHERE username = ? AND token_string = ? AND purpose = ? AND date < dateOf(now()) - 30';
-        const params = [username, token, purpose];
-        const result = await db.execute(query, params, { prepare: true });
 
-        // If count is greater than 0, user is authenticated (true), otherwise false
-        return result.first()['count'] > 0;
-    } catch (error) {
-        console.error('Error executing query:', error);
-        return false;
+// IS AUTHENTICATED? METHOD
+export const credentials = async (app: Express) => {
+    app.post('/credentials', createRateLimiter(15, 15), async (req, res) => {
+        // Extract request parameters
+        const { userid, username, secret } = req.body;
+
+        let sessionToken = await getSessionToken(username);
+
+        try {
+            // Calculate expiration limit (30 days ago)
+            const currentDate = new Date();
+            const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            // Query session to check if token is valid
+            const query = 'SELECT date, authenticated FROM session WHERE username = ? ALLOW FILTERING';
+            const params = [username];
+            const result = await db.execute(query, params, { prepare: true });
+
+            // Check if session exists and token is still valid
+            if (result.rowLength > 0) {
+                const session = result.rows[0];
+                const sessionDate = new Date(session.date);
+
+                if (sessionDate > expirationLimit && session.authenticated === true) {
+                    // Session's token is still valid and authenticated is true ...
+                    // Check user faults
+                    try {
+                        const faultQuery = 'SELECT * FROM user_fault WHERE userid = ?';
+                        const result = await db.execute(faultQuery, [userid], { prepare: true });
+                        const users = result.rows;
+                        const faults = users.filter(user => user.ban || user.prison);
+
+                        if (faults.length > 0) {
+                            // Respond accordingly if there are faults
+                            return res.status(400).send({ faults: faults[0] });
+                        }
+                    } catch (error) {
+                        console.error('Database query error:', error);
+                        return res.status(500).send({ message: 'An error occurred while checking user faults.' });
+                    }
+
+                    // Finally, check if the private key reconstructs correctly for the username provided
+                    const associatedUsername = await reconstructionCheck(userid, secret, sessionToken.token);
+
+                    if (associatedUsername !== username) {
+                        return res.status(400).json({ message: 'Credentials provided do not match.' });
+                    }
+
+                    return res.json({ authenticated: true, message: 'All credentials are valid.' });
+                }
+            }
+
+            // Session does not exist or token has expired
+            return res.status(401).json({ authenticated: false, message: 'Invalid or expired session credentials.' });
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+            return res.status(500).json({ authenticated: false, message: 'Error checking authentication.' });
+        }
+    });
+};
+
+// ADD ANOTHER METHOD FOR AUTHORIZATION where we expect the private share to be passed and we check if the user is authorized to perform the action, a separate method is required because we do not want to send the private share with every request, only when the user logs in and when the user wants to perform a sensitive action.
+
+export const checkAuthorization = async (username: string, privateKeyShare: string) => {
+    // Step 1: Get UserID from users table by UserName
+    const userResult = await getUserID(username);
+    if (userResult.error) {
+        return { success: false, message: userResult.error };
     }
+
+    const userID = userResult.userID;
+
+    // Step 2: Check if the user is banned or in prison
+    const faultQuery = 'SELECT * FROM user_fault WHERE userid = ?';
+    const result = await db.execute(faultQuery, [userID], { prepare: true });
+    const users = result.rows;
+    const faults = users.filter(user => user.ban || user.prison);
+
+    if (faults.length > 0) {
+        return { success: false, message: 'User is banned or in prison.' };
+    }
+
+    // Step 3: Get PrivateKeyShare from pvt_app table by UserID
+    let combinedPrivateKey: string | null;
+    const privateKeyShareQuery = 'SELECT PrivateKeyShare FROM pvt_app WHERE userid = ?';
+    const privateKeyShareResult = await db.execute(privateKeyShareQuery, [userID]);
+    const dbPrivateKeyShare = privateKeyShareResult.rows[0]['privatekeyshare'];
+
+    // Step 4: Combine the shares using the deshamir function
+    combinedPrivateKey = await deshamir(privateKeyShare, dbPrivateKeyShare);
+
+    if (!combinedPrivateKey) {
+        return { success: false, message: 'Failed to combine private key shares.' };
+    }
+
+    // Step 5: Check if username is associated with the private key on the blockchain
+    const privateKey = Key.PrivateKey.fromString(combinedPrivateKey);
+    const publicKey = privateKey.getPublicKey().toString();
+    const response = await fetch("https://testnet-lightapi.eosams.xeos.me/api/key/" + publicKey);
+    const data = await response.json();
+    const associatedUsername = Object.keys(data.protontest.accounts)[0];
+
+    if (associatedUsername !== username) {
+        return { success: false, message: 'Credentials provided do not match.' };
+    }
+
+    return true;
 }
 
 
+// SELECT COUNT(*) FROM session WHERE username = ? AND date < dateOf(now()) - 30 days;
+
+
+// UPDATE session SET date = '2024-01-01 21:14:48.787+0000' WHERE username = 'test1515';
+
+// INSERT SECRET SHARE FOR A USER
+// INSERT INTO pvt_app(UserID, CreationDate, PrivateKeyShare) VALUES(c4471371-b6af-4392-9746-5261271ec442, '2024-03-01 21:14:48.787+0000', 'wPOlBbmUk3Eax13pbVMgji+l6hulE5Lq4d753BdrK2R0PCx0Gjusd56b+r/a8Ema0V6xzGtt4Ildew==');
+
+
+// UPDATE users SET level = 2 WHERE userid = c4471371-b6af-4392-9746-5261271ec442;
+// INSERT INTO user_fault (userid, ban) VALUES (c4471371-b6af-4392-9746-5261271ec442, 'yes');
+
+// UPDATE session SET authenticated = false WHERE username = 'test1515';
+
+// ALTER TABLE users ADD Title text;
+// UPDATE users SET xp = 230 WHERE userid = c4471371-b6af-4392-9746-5261271ec442;
+// INSERT INTO progression (userid, titles, level, xp) VALUES(c4471371-b6af-4392-9746-5261271ec442, {'Newb'}, 1, 0);
+// UPDATE progression SET connections = connections + {'okapi'} WHERE userID = c4471371-b6af-4392-9746-5261271ec442;
 
 // TESTING METHODS BELOW
 
@@ -504,49 +715,7 @@ export const test = (app: Express) => {
     });
 };
 
-// IS AUTHENTICATED? METHOD
-export const isAuth = async (app: Express) => {
-    app.post('/isauth', createRateLimiter(15, 15), async (req, res) => {
-        const { username, token, purpose } = req.body;
 
-        try {
-            // Calculate expiration limit (30 days ago)
-            const currentDate = new Date();
-            const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-            // Query session to check if token is valid
-            const query = 'SELECT token_string, date FROM session WHERE username = ? AND token_string = ? AND purpose = ? ALLOW FILTERING';
-            const params = [username, token, purpose];
-            const result = await db.execute(query, params, { prepare: true });
-
-            // Check if session exists and token is still valid
-            if (result.rowLength > 0) {
-                const session = result.rows[0];
-                const sessionDate = new Date(session.date);
-
-                if (sessionDate > expirationLimit) {
-                    // Session's token is still valid
-                    return res.json({ authenticated: true, message: 'All credentials are valid.' });
-                }
-            }
-
-            // Session does not exist or token has expired
-            res.status(401).json({ authenticated: false, message: 'Invalid or expired session credentials.' });
-        } catch (error) {
-            console.error('Error checking authentication:', error);
-            res.status(500).json({ authenticated: false, message: 'Error checking authentication.' });
-        }
-    });
-};
-
-
-// SELECT COUNT(*) FROM session WHERE username = ? AND date < dateOf(now()) - 30 days;
-
-
-// UPDATE session SET date = '2024-01-01 21:14:48.787+0000' WHERE username = 'test1515';
-
-// INSERT SECRET SHARE FOR A USER
-// INSERT INTO pvt_app(UserID, CreationDate, PrivateKeyShare) VALUES(c4471371-b6af-4392-9746-5261271ec442, '2024-03-01 21:14:48.787+0000', 'wPOlBbmUk3Eax13pbVMgji+l6hulE5Lq4d753BdrK2R0PCx0Gjusd56b+r/a8Ema0V6xzGtt4Ildew==');
 
 
 // 10 exotic animal usernames

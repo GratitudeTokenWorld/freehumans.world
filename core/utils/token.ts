@@ -4,23 +4,18 @@ import { createRateLimiter } from '../middleware/limiter';
 import { randomBytes } from 'crypto';
 import db from '../utils/scylladb';
 
-// Session Token expiration times in minutes
-const token_expiration: { [key: string]: number } = {
-    reg: 15,
-    temp: 1440,
-    long: 43200
-};
-
 // Generate a random token
-function generateRandomToken(): string {
-    return randomBytes(8).toString('hex'); // Generates a unique token of 16 characters
+function generateToken() {
+    // AES-256 requires a 256-bit key (32 bytes)
+    const key = randomBytes(32);
+    return key.toString('hex'); // Convert key to hexadecimal string
 }
 
 export const generateSessionToken = (app: Express) => {
-    app.get('/session-token', createRateLimiter(15, 15), async (req, res) => {
+    app.post('/session-token', createRateLimiter(15, 15), async (req, res) => {
 
-        const purpose = req.query.purpose as string;
-        const username = req.query.username as string;
+        const purpose = req.body.purpose;  // Purpose is received but not used in the query
+        const username = req.body.username;
         const ip_address = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
         if (!username) {
@@ -35,8 +30,9 @@ export const generateSessionToken = (app: Express) => {
         const expirationLimit = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
 
         try {
-            const queryFindSession = 'SELECT token_string, date FROM session WHERE ip_address = ?';
-            const existingSessionResult = await db.execute(queryFindSession, [ip_address]);
+            // Corrected query to include all necessary primary key components
+            const queryFindSession = 'SELECT token_string, date FROM session WHERE username = ? AND ip_address = ? ALLOW FILTERING';
+            const existingSessionResult = await db.execute(queryFindSession, [username, ip_address]);
 
             if (existingSessionResult.rowLength > 0) {
                 const session = existingSessionResult.rows[0];
@@ -44,14 +40,14 @@ export const generateSessionToken = (app: Express) => {
 
                 if (sessionDate > expirationLimit) {
                     // Session's token is still valid
-                    return res.json({ token: session.token_string, message: 'Existing token is still valid.' });
+                    return res.json({ message: 'Existing token is still valid.' });
                 }
             }
 
-            // Generate a new token and update or insert the session
-            const newToken = generateRandomToken();
-            const queryUpsertSession = 'INSERT INTO session (ip_address, token_string, purpose, date, username) VALUES (?, ?, ?, ?, ?)';
-            await db.execute(queryUpsertSession, [ip_address, newToken, purpose, currentDate, username]);
+            // Generate a new token and insert it into the session
+            const newToken = generateToken(); // Ensure generateToken is correctly defined elsewhere
+            const queryUpsertSession = 'INSERT INTO session (username, ip_address, token_string, date) VALUES (?, ?, ?, ?)';
+            await db.execute(queryUpsertSession, [username, ip_address, newToken, currentDate]);
 
             res.json({ token: newToken, message: 'New token generated.' });
         } catch (error) {
@@ -60,6 +56,7 @@ export const generateSessionToken = (app: Express) => {
         }
     });
 };
+
 
 
 

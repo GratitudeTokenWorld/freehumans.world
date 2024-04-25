@@ -640,7 +640,6 @@ body .blur-it {
     background-color: var(--main-color) !important
 }
 
-
 /* PAGE CONNECT */
 
 .connect_page {
@@ -718,6 +717,10 @@ body .blur-it {
 }
 
 @media screen and (max-width: 950px) {
+
+    .overflow-hidden-mobile {
+        overflow: hidden !important
+    }
 
     .table1 td {
         font-size: 12px;

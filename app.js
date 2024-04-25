@@ -42,8 +42,10 @@ app.use(allowFromHostname); // Custom middleware for hostname validation
 (0, userController_1.addUsers)(app);
 (0, token_1.generateSessionToken)(app);
 (0, userController_1.login)(app);
-(0, userController_1.isAuth)(app);
+(0, userController_1.removeSession)(app);
+(0, userController_1.credentials)(app);
 (0, userController_1.test)(app);
+(0, userController_1.getTokens)(app);
 (0, emailController_1.location)(app);
 (0, emailController_1.sendCode)(app);
 (0, emailController_1.verifyCode)(app);

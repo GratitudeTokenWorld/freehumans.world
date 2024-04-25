@@ -10,9 +10,6 @@ $('#homepage') ? null : tooltips();
 draggableStuff();
 posting();
 
-import { isAuthenticated } from '/js/isauth.js';
-isAuthenticated();
-
 let sounds = defaultSounds('lucianape3', null, null)
 
 
@@ -68,6 +65,9 @@ $('bags') ? $('bags').addEventListener('click', e => {
         sounds[31].currentTime = 0;
         sounds[31].play();
     }
+    $('body').classList.toggle('overflow-hidden-mobile') // this and the scroll below solves the inventory drag and drop image offset issue
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
     $('slots').classList.toggle('open')
     $('#user-menu').classList.remove('show')
     $('#notifications').classList.remove('showNotifications')
@@ -169,17 +169,15 @@ $$('.comments').forEach(el => {
 
 
 
-let mybutton = $("#scrollToTopBtn");
-
-window.addEventListener("scroll", debounce(() => {
+$('body').addEventListener("scroll", debounce(() => {
     if (document.body.scrollTop > 1000 || document.documentElement.scrollTop > 1000) {
-        mybutton.classList.add('showTopBtn')
+        scrollToTopBtn.classList.add('showTopBtn')
     } else {
-        mybutton.classList.remove('showTopBtn')
+        scrollToTopBtn.classList.remove('showTopBtn')
     }
 }, 100));
 
-mybutton.addEventListener('click', e => {
+scrollToTopBtn.addEventListener('click', e => {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
 })
